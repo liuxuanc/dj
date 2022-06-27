@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}asdas{% endblock %}
+
+
+{% block css %}
+    <style>
+        div img{
+        width:auto;
+        height:auto;
+        max-width:100%;
+        max-height:100%;
+       }
+    </style>
+
+{% endblock %}
+
+
+{% block content %}
+{#    <div class="row">#}
+{#        <div class="col-6 col-md-3"><a href="http://172.18.1.12/" target="_blank"><img src="{% static 'img/lf.jpg' %}"></a></div>#}
+{#        <div class="col-6 col-md-3"><a href="http://172.18.1.12/" target="_blank"><img src="{% static 'img/qb.jpg' %}"></a></div>#}
+{#        <div class="col-6 col-md-3"><a href="http://172.18.1.12/" target="_blank"><img src="{% static 'img/hzw.jpg' %}"></a></div>#}
+{#        <div class="col-6 col-md-3"><a href="http://172.18.1.12/" target="_blank"><img src="{% static 'img/qq.jpg' %}"></a></div>#}
+{#      </div>#}
+
+{#    <script>#}
+{#    console.log($().jquery);#}
+{#    </script>#}
+
+    <section class="content">
+      <div class="container-fluid">
+        <h5 class="mb-2">导航页</h5>
+        <div class="row">
+
+          <div class="col-md-3 col-sm-6 col-12">
+            <div class="info-box">
+              <div class="info-box-content">
+                  <a href="http://172.18.1.12/" target="_blank"><img src="{% static 'img/zabbix.jpg' %}" alt=""></a>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-3 col-sm-6 col-12">
+            <div class="info-box">
+              <div class="info-box-content">
+                  <a href="http://172.18.1.12:3000/" target="_blank"><img src="{% static 'img/grafana.jpg' %}" alt=""></a>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-3 col-sm-6 col-12">
+            <div class="info-box">
+              <div class="info-box-content">
+                  <img src="{% static 'img/qb.jpg' %}" alt="">
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-3 col-sm-6 col-12">
+            <div class="info-box">
+              <div class="info-box-content">
+                  <a href="http://172.18.1.15:8080/" target="_blank"><img src="{% static 'img/jenkins.jpg' %}" alt=""></a>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-3 col-sm-6 col-12">
+            <div class="info-box">
+              <div class="info-box-content">
+                  <a href="http://jump.gov-info.cn/" target="_blank"><img src="{% static 'img/jumpserver.jpg' %}" alt=""></a>
+              </div>
+            </div>
+          </div>
+
+
+            </div>
+          </div>
+    </section>
+
+
+{% endblock %}

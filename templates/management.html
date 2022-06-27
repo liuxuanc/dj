@@ -1,0 +1,337 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}华瓴科技{% endblock %}
+
+
+{% block css %}
+
+    <link rel="stylesheet" href="{% static 'css/bootstrap-table_1.19.1.css' %}">
+{#    <script src="https://unpkg.com/bootstrap-table@1.19.1/dist/bootstrap-table.min.js"></script>#}
+    <script src="{% static 'js/bootstrap-table_1.19.1.js' %}"></script>
+    <script src="{% static 'js/bootstrap-table-zh-CN_1.19.1.js' %}"></script>
+
+{#    导出#}
+    <script src="{% static 'js/tableExport.js' %}"></script>
+    <script src="{% static 'js/bootstrap-table-export.js' %}"></script>
+
+{#    日历#}
+    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/tempusdominus-bootstrap-4/5.39.0/css/tempusdominus-bootstrap-4.min.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" >
+    <script src="https://cdn.bootcdn.net/ajax/libs/moment.js/2.29.1/moment-with-locales.min.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/tempusdominus-bootstrap-4/5.39.0/js/tempusdominus-bootstrap-4.min.js"></script>
+
+
+{% endblock %}
+
+
+{% block content %}
+
+{#    新增按钮#}
+    <div class="row" id="toolbar">
+        <div class="btn-sm">
+            <button class="btn btn-w-m btn-primary glyphicon glyphicon-plus" data-toggle="modal"
+                    href="#addType" data-keyboard="true" data-backdrop="false"
+                    id="btn_add">新增</button>
+        </div>
+    </div>
+<table id="table" class="table table-hover table-bordered"></table>
+
+{# add模态框 #}
+<div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel" id="addModal">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+{#        <h4 class="modal-title" id="gridSystemModalLabel"></h4>#}
+      </div>
+      <div class="modal-body">
+
+          <form method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <label>资产名称
+                <input class="form-control" id="add_pro_name" placeholder="必填项"></label>
+            </div>
+            <div class="form-group">
+                <label>规格型号
+                <input class="form-control" id="add_type" placeholder="必填项"></label>
+            </div>
+            <div class="form-group">
+                <label>数量
+                <input class="form-control" id="add_num" placeholder="必填项"></label>
+            </div>
+            {#  日期  #}
+            <div class="form-group">
+                <label>入库日期</label>
+                <div class="input-group date col-sm-6" id="datetimepicker" data-target-input="nearest">
+                    <label for="dateTime"></label><input type="text" class="form-control datetimepicker-input" data-target="#datetimepicker" id="dateTime" placeholder="必填项">
+                    <div class="input-group-append" data-target="#datetimepicker" data-toggle="datetimepicker">
+                        <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>资产编码
+                <input class="form-control" id="add_asset_code" placeholder="必填项"></label>
+            </div>
+
+            <div class="form-group">
+                <label>使用者
+                <input class="form-control" id="add_current_user"></label>
+            </div>
+
+             <div class="form-group">
+                <label>领用日期</label>
+                    <div class="input-group date col-sm-6" id="datetimepickers" data-target-input="nearest">
+                        <label for="dateTime1"></label><input type="text" class="form-control datetimepicker-input" data-target="#datetimepickers" id="dateTime1">
+                        <div class="input-group-append" data-target="#datetimepickers" data-toggle="datetimepicker">
+                            <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                        </div>
+                    </div>
+            </div>
+
+
+            <div class="form-group">
+                <label>备注
+                <input class="form-control" id="add_remarks"></label>
+            </div>
+
+
+        </form>
+
+
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+        <button type="button" class="btn btn-primary" id="addsave">保存</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+
+
+
+<!-- Modal -->
+{#<div class="modal fade" id="editModal" tabindex="-1" data-backdrop="static" >#}
+{#<div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">#}
+<div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel"> </h4>
+      </div>
+      <div class="modal-body">
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <label>资产名称
+                <input class="form-control" id="pro_name"></label>
+            </div>
+            <div class="form-group">
+                <label>规格型号
+                <input class="form-control" id="type"></label>
+            </div>
+            <div class="form-group">
+                <label>数量
+                <input class="form-control" id="num"></label>
+            </div>
+            <div class="form-group">
+                <label>使用者
+                <input class="form-control" id="current_user"></label>
+            </div>
+
+            <div class="form-group">
+                <label>资产编码
+                <input class="form-control" id="asset_code"></label>
+            </div>
+            <div class="form-group">
+                <label>备注
+                <input class="form-control" id="remarks"></label>
+            </div>
+
+
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+        <button type="button" class="btn btn-primary" id="save">保存</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+{% endblock %}
+
+
+{% block script %}
+    <script>
+
+{#        let token = "{{ csrf_token }}"#}
+{#        $.ajaxSetup({#}
+{#        headers: { 'X-CSRFTOKEN': `${token}` },});#}
+        $.ajaxSetup({
+ 　　　　data: {csrfmiddlewaretoken: '{{ csrf_token }}'}
+ 　　})
+
+        $('#table').bootstrapTable({
+            toolbar: '#toolbar',                //自定义工具按钮
+            url: 'http://127.0.0.1:8000/infodata/',
+            method: 'GET',
+            contentType: "application/x-www-form-urlencoded",
+            striped: true, //使表格带有条纹
+            pagination: true, //在表格底部显示分页工具栏
+            pageSize: 10,
+            pageNumber: 1,
+            pageList: [10, 20, 50, 100, 200, 'ALL'],
+            idField: "ProductId", //标识哪个字段为id主键
+            showToggle: false, //名片格式
+            cardView: false,//设置为True时显示名片（card）布局
+            showColumns: true, //显示隐藏列
+            showRefresh: true, //显示刷新按钮
+            singleSelect: true,//复选框只能选择一条记录
+            search: true,//是否显示右上角的搜索框
+            clickToSelect: true,//点击行即可选中单选/复选框
+            sidePagination: "client",//表格分页的位置
+            {#queryParams: queryParams, //参数#}
+            queryParamsType: "limit", //参数格式,发送标准的RESTFul类型的参数请求
+            silent: true, //刷新事件必须设置
+            showExport: true,
+            buttonsAlign: "right",
+            exportDataType: 'all',
+            Icons: 'glyphicon-export',
+            exportTypes:[ 'json','excel','doc','xlsx','csv', 'txt', 'sql' ],
+            columns: [
+                {checkbox: true},
+                {field: 'id', title: 'ID',visible: false},//默认隐藏ID这一列
+                {field: 'pro_name', title: '资产名称'},
+                {field: 'type', title: '规格型号'},
+                {field: 'num', title: '数量'},
+                {field: 'add_time', title: '入库日期',visible: false},
+                {field: 'asset_code', title: '资产编码'},
+                {field: 'current_user', title: '使用者'},
+                {field: 'requisition_time', title: '领用日期'},
+                {field: 'user_one', title: '使用者1'},
+                {field: 'user_one_requisition_time', title: '使用者1领用日期',visible: false},
+                {field: 'return_date', title: '归还日期'},
+                {field: 'remarks', title: '备注',visible: false},
+                {title: '操作', formatter: actionFormatter}
+                ],
+            });
+
+        function actionFormatter(value,rows) {
+            return '<button onclick="edit(' + rows.id + ')" class="btn btn-xs btn-info">编辑</button> '
+        }
+            {#'<button onclick="deleteUser('+ rows.id +')" class="btn btn-xs btn-danger">删除</button>'#}
+
+
+        {#点击编辑按钮，填充数据到表格#}
+        function edit(id) {
+            $.ajax({
+                url: '/showdata/',
+                type: 'get',
+                data: {userId:id},
+                dataType: 'json',
+                success : function(data) {
+                    $('#pro_name').val(data.pro_name)
+                    $('#type').val(data.type)
+                    $('#num').val(data.num)
+                    $('#remarks').val(data.remarks)
+                    $('#asset_code').val(data.asset_code)
+                    $('#current_user').val(data.current_user)
+                    $('#requisition_time').val(data.requisition_time)
+                    $('#user_one').val(data.user_one)
+                    }
+                })
+            $('#editModal').modal()
+
+        {#$('#save').click(function(){#}
+        $('#save').unbind('click').bind('click',function (){
+            let name = $('#pro_name').val()
+            let type = $('#type').val()
+            let num = $('#num').val()
+            let remarks = $('#remarks').val()
+            let asset_code = $('#asset_code').val()
+            let current_user = $('#current_user').val()
+            let requisition_time = $('#requisition_time').val()
+            let user_one = $('#user_one').val()
+
+            $.ajax({
+                url: '/saveinfo/',
+                type: "POST",
+                dataType: "json",
+                data: {userId:id,pro_name:name,type:type,num:num,remarks:remarks,asset_code:asset_code,current_user:current_user,requisition_time:requisition_time,user_one:user_one},
+                success: function () {
+                    $('#save').unbind()
+                    alert('修改成功!')
+                    $('#table').bootstrapTable('refresh');
+                    },
+                })
+            $('#editModal').modal('hide')
+            })
+        }
+
+
+    {#点击新增按钮，填充数据到数据库#}
+        $('#btn_add').click(function(){
+            $('#addModal').modal();
+
+            $('body').on('hidden.bs.modal', '.modal', function () {
+              $(this).removeData('bs.modal');});
+
+
+            $('#addsave').unbind('click').bind('click',function (){
+            let name = $('#add_pro_name').val()
+            let type = $('#add_type').val()
+            let num = $('#add_num').val()
+            let remarks = $('#add_remarks').val()
+            let asset_code = $('#add_asset_code').val()
+            let current_user = $('#add_current_user').val()
+            let dateTime = $('#dateTime').val()
+            let nonetime = $('#requisition_time').val()
+            let dateTime1 = $('#dateTime1').val()
+
+            $.ajax({
+                url: '/addinfo/',
+                type: "POST",
+                dataType: "json",
+                data: {pro_name:name,type:type,num:num,remarks:remarks,asset_code:asset_code,current_user:current_user
+                    ,dateTime:dateTime,notime:nonetime,requisition_time:dateTime1},
+                success: function (result) {
+                    if(result !== 0){
+                        alert('添加成功!');
+                        $('#table').bootstrapTable('refresh');
+                    }else {
+                        alert('格式错误!');
+                        $('#table').bootstrapTable('refresh');
+                    }
+
+                    },
+                })
+            $('#addModal').modal('hide')
+            })
+            {#清空form模态框#}
+            $('.modal-body').find('form').trigger('reset');
+        });
+
+        $('#datetimepicker').datetimepicker({
+            format: 'YYYY-MM-DD HH:mm:ss',
+            locale: moment.locale('zh-cn')
+        })
+
+        $('#datetimepickers').datetimepicker({
+            format: 'YYYY-MM-DD HH:mm:ss',
+            locale: moment.locale('zh-cn')
+        });
+
+
+    </script>
+
+{% endblock %}
