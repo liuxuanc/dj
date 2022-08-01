@@ -6,6 +6,13 @@
 
 {% block css %}
 
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
+{#    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js" integrity="sha256-7dA7lq5P94hkBsWdff7qobYkp9ope/L5LQy2t/ljPLo=" crossorigin="anonymous"></script>#}
+    <script src="{% static 'AdminLTE-master/plugins/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+    <link href="https://cdn.bootcdn.net/ajax/libs/bootstrap-select/1.14.0-beta3/css/bootstrap-select.min.css" rel="stylesheet">
+    <script src="https://cdn.bootcdn.net/ajax/libs/bootstrap-select/1.14.0-beta3/js/bootstrap-select.min.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/bootstrap-select/1.14.0-beta3/js/i18n/defaults-zh_CN.min.js"></script>
+
     <link rel="stylesheet" href="{% static 'css/bootstrap-table_1.19.1.css' %}">
 {#    <script src="https://unpkg.com/bootstrap-table@1.19.1/dist/bootstrap-table.min.js"></script>#}
     <script src="{% static 'js/bootstrap-table_1.19.1.js' %}"></script>
@@ -34,7 +41,27 @@
                     href="#addType" data-keyboard="true" data-backdrop="false"
                     id="btn_add">新增</button>
         </div>
+
+        <div class="btn-sm">
+            <button class="btn btn-w-m btn-primary glyphicon glyphicon-plus" data-toggle="modal"
+                    href="#addType" data-keyboard="true" data-backdrop="false"
+                    id="distribute">分发</button>
+        </div>
+
+        <div class="btn-sm">
+            <button class="btn btn-w-m btn-primary glyphicon glyphicon-plus" data-toggle="modal"
+                    data-keyboard="true" data-backdrop="false"
+                    id="recovery">回收</button>
+        </div>
+
+        <div class="btn-sm">
+            <button class="btn btn-w-m btn-danger glyphicon glyphicon-plus" data-toggle="modal"
+                    data-keyboard="true" data-backdrop="false"
+                    id="scrap">报废</button>
+        </div>
     </div>
+
+
 <table id="table" class="table table-hover table-bordered"></table>
 
 {# add模态框 #}
@@ -47,7 +74,7 @@
       </div>
       <div class="modal-body">
 
-          <form method="post">
+          <form method="post" enctype="multipart/form-data">
             {% csrf_token %}
             <div class="form-group">
                 <label>资产名称
@@ -55,7 +82,7 @@
             </div>
             <div class="form-group">
                 <label>规格型号
-                <input class="form-control" id="add_type" placeholder="必填项"></label>
+                <input class="form-control" id="add_type"></label>
             </div>
             <div class="form-group">
                 <label>数量
@@ -70,6 +97,11 @@
                         <div class="input-group-text"><i class="fa fa-calendar"></i></div>
                     </div>
                 </div>
+            </div>
+
+            <div class="form-group">
+                <label>S/N
+                <input class="form-control" id="add_sn"></label>
             </div>
 
             <div class="form-group">
@@ -92,16 +124,12 @@
                     </div>
             </div>
 
-
             <div class="form-group">
                 <label>备注
                 <input class="form-control" id="add_remarks"></label>
             </div>
 
-
         </form>
-
-
 
       </div>
       <div class="modal-footer">
@@ -111,6 +139,134 @@
     </div><!-- /.modal-content -->
   </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
+
+
+{# 分发模态框 #}
+<div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel" id="ffModal">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+{#        <h4 class="modal-title" id="gridSystemModalLabel"></h4>#}
+      </div>
+      <div class="modal-body">
+
+          <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="m_cname ">资产类别</label>
+                <div class="col-sm-6 add_select_cname">
+                <select class="selectpicker show-tick form-control" data-live-search="true" id="selectele">
+                     <option value="请选择">请选择</option>
+                     {% for li in lists %}
+                     <option value={{ li }}>{{ li }}</option>
+                     {% endfor %}
+                 </select>
+                 </div>
+            </div>
+
+            <div class="form-group">
+                <label for="m_cname ">规格型号</label>
+                <div class="col-sm-6 add_select_cname">
+{#                <select class="selectpicker show-tick form-control" id="typeselect">#}
+                <select class="form-control" id="typeselect" required="required">
+
+                 </select>
+                 </div>
+            </div>
+
+            <div class="form-group">
+                <label for="m_cname ">资产编码</label>
+                <div class="col-sm-6 add_select_cname">
+{#                <select class="selectpicker show-tick form-control" id="typeselect">#}
+                <select class="form-control" id="codeselect" title="---请选择---" required="required">
+{#                     <option value="请选择">请选择</option>#}
+                 </select>
+                 </div>
+            </div>
+
+            <div class="form-group">
+                <label for="m_cname ">选择用户</label>
+                <div class="col-sm-6 add_select_cname">
+                <select class="selectpicker show-tick form-control" data-live-search="true" id="choice_user">
+                    <option value="请选择">请选择</option>
+                    {% for user in user_list %}
+                     <option value={{ user }}>{{ user }}</option>
+                     {% endfor %}
+                 </select>
+                 </div>
+            </div>
+
+        </form>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+        <button type="button" class="btn btn-primary" id="ffsave">保存</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div>
+
+
+{#    回收模态框#}
+<div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel" id="hsModal">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+{#        <h4 class="modal-title" id="gridSystemModalLabel"></h4>#}
+      </div>
+      <div class="modal-body">
+          <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="m_cname ">选择用户</label>
+                <div class="col-sm-6 add_select_cname">
+                <select class="selectpicker show-tick form-control" data-live-search="true" title="---请选择---" id="recover_user">
+{#                    <option value="请选择">请选择</option>#}
+                    {% for user in user_list %}
+                     <option value={{ user }}>{{ user }}</option>
+                     {% endfor %}
+                 </select>
+                 </div>
+            </div>
+
+              <div class="form-group">
+                <label for="m_cname ">资产回收</label>
+                <div class="col-sm-6 add_select_cname">
+{#                <select class="form-control" id="recover_assets" data-actions-box="true">#}
+                <select class="selectpicker form-control" multiple data-actions-box="true" title="---请选择---" id="recover_assets">
+                </select>
+                 </div>
+            </div>
+
+{#              <div class="form-group">#}
+{#                <label for="m_cname ">xxxxx</label>#}
+{#                <div class="col-sm-6 add_select_cname">#}
+{#                <select class="selectpicker show-tick" data-actions-box="true" data-size="15" id="testxxx" multiple>#}
+{#                <select class="selectpicker" data-live-search="true" data-actions-box="true" id="testxxx" title="---请选择---">#}
+{#                <select class="selectpicker" multiple data-actions-box="true" title="---请选择---" id="testxxx">#}
+{#                    <option value="请选择">请选择1</option>#}
+{#                    <option value="请选择">请选择2</option>#}
+{#                    <option value="请选择">请选择3</option>#}
+{#                    <option value="请选择">请选择4</option>#}
+{#                    <option value="请选择">请选择5</option>#}
+{#                </select>#}
+{##}
+{#                 </div>#}
+{#            </div>#}
+
+        </form>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+        <button type="submit" class="btn btn-primary" id="hssave">提交</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div>
 
 
 
@@ -146,8 +302,14 @@
             </div>
 
             <div class="form-group">
+                <label>SN
+                <input class="form-control" id="sn_num" value="readonly" readonly></label>
+                <button class="btn btn-default" id="find_info" type="button">查询</button>
+            </div>
+
+            <div class="form-group">
                 <label>资产编码
-                <input class="form-control" id="asset_code"></label>
+                <input class="form-control" id="asset_code" value="readonly" readonly></label>
             </div>
             <div class="form-group">
                 <label>备注
@@ -174,9 +336,7 @@
 {% block script %}
     <script>
 
-{#        let token = "{{ csrf_token }}"#}
-{#        $.ajaxSetup({#}
-{#        headers: { 'X-CSRFTOKEN': `${token}` },});#}
+
         $.ajaxSetup({
  　　　　data: {csrfmiddlewaretoken: '{{ csrf_token }}'}
  　　})
@@ -213,8 +373,10 @@
                 {field: 'id', title: 'ID',visible: false},//默认隐藏ID这一列
                 {field: 'pro_name', title: '资产名称'},
                 {field: 'type', title: '规格型号'},
-                {field: 'num', title: '数量'},
+                {#{field: 'parameter', title: '具体参数'},#}
+                {field: 'num', title: '数量',visible: false},
                 {field: 'add_time', title: '入库日期',visible: false},
+                {field: 'sn', title: 'S/N'},
                 {field: 'asset_code', title: '资产编码'},
                 {field: 'current_user', title: '使用者'},
                 {field: 'requisition_time', title: '领用日期'},
@@ -248,9 +410,27 @@
                     $('#current_user').val(data.current_user)
                     $('#requisition_time').val(data.requisition_time)
                     $('#user_one').val(data.user_one)
+                    $('#sn_num').val(data.sn)
+
                     }
                 })
             $('#editModal').modal()
+
+            $('#find_info').unbind('click').bind('click',function (){
+                $.ajax({
+                url: '{% url "myproperty:findinfo" %}',
+                type: 'get',
+                data: {userId:id},
+                dataType: 'json',
+                success : function(data) {
+                    {#$('#sn_num').val(data.sn)#}
+                    {#alert(data.lenovo_info)#}
+                    console.log(data)
+                    alert(data.lenovo_info)
+                    }
+                })
+            })
+
 
         {#$('#save').click(function(){#}
         $('#save').unbind('click').bind('click',function (){
@@ -272,25 +452,29 @@
                     $('#save').unbind()
                     alert('修改成功!')
                     $('#table').bootstrapTable('refresh');
+                    window.location.reload()
                     },
                 })
             $('#editModal').modal('hide')
             })
+
         }
 
 
-    {#点击新增按钮，填充数据到数据库#}
+
+
+        {#点击新增按钮，填充数据到数据库#}
         $('#btn_add').click(function(){
             $('#addModal').modal();
 
-            $('body').on('hidden.bs.modal', '.modal', function () {
-              $(this).removeData('bs.modal');});
-
+            {#$('body').on('hidden.bs.modal', '.modal', function () {#}
+            {#  $(this).removeData('bs.modal');});#}
 
             $('#addsave').unbind('click').bind('click',function (){
             let name = $('#add_pro_name').val()
             let type = $('#add_type').val()
             let num = $('#add_num').val()
+            let add_sn = $('#add_sn').val()
             let remarks = $('#add_remarks').val()
             let asset_code = $('#add_asset_code').val()
             let current_user = $('#add_current_user').val()
@@ -299,18 +483,25 @@
             let dateTime1 = $('#dateTime1').val()
 
             $.ajax({
+
+
+            })
+
+            $.ajax({
                 url: '/addinfo/',
                 type: "POST",
                 dataType: "json",
-                data: {pro_name:name,type:type,num:num,remarks:remarks,asset_code:asset_code,current_user:current_user
+                data: {pro_name:name,type:type,num:num,add_sn:add_sn,remarks:remarks,asset_code:asset_code,current_user:current_user
                     ,dateTime:dateTime,notime:nonetime,requisition_time:dateTime1},
                 success: function (result) {
                     if(result !== 0){
                         alert('添加成功!');
                         $('#table').bootstrapTable('refresh');
+                        window.location.reload()
                     }else {
                         alert('格式错误!');
                         $('#table').bootstrapTable('refresh');
+                        window.location.reload()
                     }
 
                     },
@@ -320,6 +511,140 @@
             {#清空form模态框#}
             $('.modal-body').find('form').trigger('reset');
         });
+
+
+        {# 分发按钮 #}
+        $('#distribute').click(function() {
+            $('#ffModal').modal();
+
+            $('#selectele').change(function () {
+                let select = $("#selectele option:selected").text()
+                    $.ajax({
+                      url: '{% url "myproperty:selectinfo" %}',
+                      type: 'GET',
+                      datatype: 'json',
+                      data: {
+                          'selectinfo': select
+                    },
+                      success: function (data) {
+                          {#console.log(data)#}
+                          let content='';
+                          $.each(data, function(i, item){
+                        // 调用接口后返回list数据[u'account_role', u'account_user'],循环遍历该list拼接选项的内容
+                        content+='<option value='+item+'>'+item+'</option>'
+                        });
+
+                          $('#typeselect').html(content)
+                          $("#typeselect").prepend("<option value='0'>请选择</option>");
+                          $("#typeselect option:first").prop("selected", 'selected');
+
+                          {#$('.selectpicker').selectpicker('val', '');#}
+                          {#$('.selectpicker').selectpicker('refresh');#}
+                      },
+                });
+
+            })
+
+
+            $('#typeselect').change(function () {
+                let tyselect = $("#typeselect option:selected").text()
+                $.ajax({
+                      url: '{% url "myproperty:selectsn" %}',
+                      type: 'GET',
+                      datatype: 'json',
+                      data: {
+                          'selectinfo': tyselect
+                    },
+                      success: function (data) {
+                          console.log(data)
+                          let content='';
+                          $.each(data, function(i, item){
+                        content+='<option value='+item+'>'+item+'</option>'
+                        });
+                          $('#codeselect').html(content)
+                      },
+
+                });
+            })
+
+            $('#ffsave').unbind('click').bind('click',function (){
+                let code = $("#codeselect option:selected").text()
+                let user = $("#choice_user option:selected").text()
+                $.ajax({
+                      url: '{% url "myproperty:saveffbtn" %}',
+                      type: 'POST',
+                      datatype: 'json',
+                      data: {
+                          'code': code,
+                          'user':user,
+                    },
+                      success: function (result) {
+                        if(result === 'success'){
+                            alert('分发成功!');
+                        window.location.reload()
+                        }else {
+                            alert('分发失败');
+                        window.location.reload()
+                        }
+                      },
+
+                });
+                $('#ffModal').modal('hide')
+            })
+
+        })
+
+
+        {# 回收按钮 #}
+        $('#recovery').click(function() {
+            $('#hsModal').modal();
+
+            $('#recover_user').change(function () {
+                let select = $("#recover_user option:selected").text()
+
+                $.ajax({
+                      url: '{% url "myproperty:selectrecover" %}',
+                      type: 'GET',
+                      datatype: 'json',
+                      data: {
+                          'select_user': select
+                    },
+                    success: function (datas) {
+                        $.each(datas, function (index, item) {
+                            $("#recover_assets").append("<option value='"+datas[index]+"'>"+datas[index]+"</option>");
+                        });
+
+                        $('#recover_assets').selectpicker('refresh');
+                        $('#recover_assets').selectpicker('render');
+
+
+                      },
+                    })
+            })
+
+                $('#hssave').unbind('click').bind('click',function (){
+                    let select = $("#recover_assets option:selected").text()
+                    let user = $("#recover_user option:selected").text()
+                    {#console.log(select)#}
+                    $.ajax({
+                      url: '{% url "myproperty:savehsbtn" %}',
+                      type: 'POST',
+                      datatype: 'json',
+                      data: {
+                          'select': select,
+                          'user': user,
+                      },
+                      success: function () {
+                          alert('回收成功!');
+                          window.location.reload()
+
+                      },
+                    });
+                    $('#hsModal').modal('hide')
+                })
+
+        })
+
 
         $('#datetimepicker').datetimepicker({
             format: 'YYYY-MM-DD HH:mm:ss',
