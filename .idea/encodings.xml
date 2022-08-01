@@ -3,6 +3,7 @@
   <component name="Encoding">
     <file url="file://$PROJECT_DIR$/myproperty/migrations/__init__.py" charset="GBK" />
     <file url="file://$PROJECT_DIR$/myproperty/models.py" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/myproperty/views.py" charset="GBK" />
     <file url="file://$PROJECT_DIR$/static/AdminLTE-master/dist/css/adminlte.css" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/templates/navigation.html" charset="UTF-8" />
     <file url="PROJECT" charset="GBK" />

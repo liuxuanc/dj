@@ -95,6 +95,21 @@ DATABASES = {
 }
 
 
+CACHES = {
+    "default": {
+    "BACKEND": "django_redis.cache.RedisCache",
+    "LOCATION": "redis://127.0.0.1:6379/2",
+    "OPTIONS": {
+        "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        "CONNECTION_POOL_KWARGS": {"max_connections": 100},
+        # "PASSWORD": '',
+        "DECODE_RESPONSES": True   # 可不写，redis get的数据是字符串格式(unicode，而不是bytes)
+    }
+}}
+
+
+
+
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
 
@@ -148,4 +163,6 @@ STATICFILES_DIRS = [
 
 
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR,'media/')
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
+
+CELERY_RESULT_BACKEND = 'redis://127.0.0.1:6379'
