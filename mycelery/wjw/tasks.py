@@ -57,8 +57,7 @@ def runwjw():
     page = math.ceil(count / 20)
     while count == GetWjw().run(page)[0]:
         schedule.run_pending()
-        time.sleep(5)
-        # break
+        time.sleep(7)
     data = GetWjw().run(page)[1]
     data_tuple = wjw.getsign(count, data, page)
     return data_tuple
@@ -66,8 +65,6 @@ def runwjw():
 
 @app.task
 def getredis(task_id, user, code):
-    print(task_id)
-    print(user)
     today = datetime.date.today()
     today = str(today) + '%'
     my_async = AsyncResult(id=task_id, app=app)
@@ -75,6 +72,7 @@ def getredis(task_id, user, code):
         if my_async.successful():
             result = my_async.get()
             key_name = list(result.keys())[0]
+            # print(key_name)
             url = list(result.values())[0]
             res = requests.get(url=url)
             # localtime = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
@@ -146,9 +144,9 @@ def getredis(task_id, user, code):
                         #     print(e)
                         #     sys.exit(1)
 
-            break
             # return 'ok'
-
+            # break
+            return 'ok'
         elif my_async.failed():
             print('faild')
         elif my_async.status == 'PENDING':
@@ -158,7 +156,7 @@ def getredis(task_id, user, code):
         elif my_async.status == 'STARTED':
             print('STARTED')
         time.sleep(8)
-    return 'ok'
+    # return 'ok'
 
 
 

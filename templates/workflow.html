@@ -5,11 +5,142 @@
 
 
 {% block css %}
+{#        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>#}
+        <script src="{% static 'AdminLTE-master/plugins/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+        <link rel="stylesheet" href="{% static 'css/bootstrap-table_1.19.1.css' %}">
+        <script src="{% static 'js/bootstrap-table_1.19.1.js' %}"></script>
+        <script src="{% static 'js/bootstrap-table-zh-CN_1.19.1.js' %}"></script>
+    {#    导出#}
+        <script src="{% static 'js/tableExport.js' %}"></script>
+        <script src="{% static 'js/bootstrap-table-export.js' %}"></script>
+        <style type="text/css">
+        .preview {position:absolute;background:#fff;padding:10px;display:none;}
+        </style>
+
 
 {% endblock %}
 
 
 {% block content %}
-<h2>5</h2>
+
+<table id="table" class="table table-hover table-bordered"></table>
+{#<img src="{% static 'showsign/1.png' %}" id="imgs" alt="签名" width="20" height="20" class="apreview"/>#}
+    <script>
+        $.ajaxSetup({
+     　　　　data: {csrfmiddlewaretoken: '{{ csrf_token }}'}
+     　　 })
+
+        $('#table').bootstrapTable({
+            toolbar: '#toolbar',                //自定义工具按钮
+            url: 'http://127.0.0.1:8000/grantdata/',
+            method: 'GET',
+            contentType: "application/x-www-form-urlencoded",
+            striped: true, //使表格带有条纹
+            pagination: true, //在表格底部显示分页工具栏
+            pageSize: 10,
+            pageNumber: 1,
+            pageList: [10, 20, 50, 100, 200, 'ALL'],
+            idField: "ProductId", //标识哪个字段为id主键
+            showToggle: false, //名片格式
+            cardView: false,//设置为True时显示名片（card）布局
+            showColumns: true, //显示隐藏列
+            showRefresh: true, //显示刷新按钮
+            singleSelect: true,//复选框只能选择一条记录
+            search: true,//是否显示右上角的搜索框
+            clickToSelect: true,//点击行即可选中单选/复选框
+            sidePagination: "client",//表格分页的位置
+            {#queryParams: queryParams, //参数#}
+            queryParamsType: "limit", //参数格式,发送标准的RESTFul类型的参数请求
+            silent: true, //刷新事件必须设置
+            showExport: true,
+            buttonsAlign: "right",
+            exportDataType: 'all',
+            Icons: 'glyphicon-export',
+            exportTypes:[ 'json','excel','doc','xlsx','csv', 'txt', 'sql' ],
+            columns: [
+                {checkbox: true},
+                {field: 'id', title: 'ID',visible: false},
+                {field: 'device', title: '资产类别'},
+                {field: 'specification', title: '型号'},
+                {field: 'user_name', title: '使用人'},
+                {field: 'info_code', title: '资产码'},
+                {field: 'alters_date', title: '日期'},
+                {title: '签名', formatter: actionFormatter},
+                {#{align: "center", title: "签名", formatter: function (value, row, index) {#}
+							{#let image =  '<div><a target="_blank" href="http://www.baidu.com/mems/' + row.filePathName + '"><img style="width: 280px;height: 220px;margin: auto" alt="' + row.devName + '" src="http://www.baidu.com/mems/' + row.filePathName + '"></img></a></div>';#}
+							{#let image = '<img src="{% static 'showsign/签名.png' %}" id="imgs" alt="签名" width="40" height="40" class="apreview"/>'#}
+							{#return image;}}#}
+                ],
+            });
+
+        function actionFormatter(value,rows) {
+            return ['<button onclick="edit(' + rows.id + ')" id="btn' + rows.id + '" class="btn btn-xs btn-info">查看</button> <img src="" id="img' + rows.id + '" width="60" height="60" class="apreview" style="display:none"/>']
+            {#return ['<button onclick="edit(' + rows.id + ')" id="btn' + rows.id + '" class="btn btn-xs btn-info">查看</button> <img src="{% static 'showsign/2.png' %}" id="img' + rows.id + '" alt="签名" width="60" height="60" class="apreview"/>']#}
+            {#return ['<button onclick="edit(' + rows.id + ')" id="btn' + rows.id + '" class="btn btn-xs btn-info">查看</button> <img id="img' + rows.id + '" width="60" height="60" class="apreview"/>']#}
+        }
+
+
+        function edit(id) {
+            $.ajax({
+                url: '{% url "myproperty:showsign" %}',
+                type: 'get',
+                data: {userId:id},
+                dataType: 'json',
+                success(user){
+                    let pict_id = "img" + id
+                    {#let img_path = 'showsign/' + user + '.png'#}
+                    $('#'+pict_id).attr('src', '../static/showsign/' + user + '.png');
+                    {#document.getElementById(pict_id).style.display="block";#}
+                    document.getElementById(pict_id).setAttribute('style','display:block');
+                    id = 'btn' + id
+                    $("#"+id).hide();
+                }
+                })
+        }
+
+        $(function() {
+            imagePreview();
+          });
+
+        this.imagePreview = function () {
+        this.xOffset = 10;
+        this.yOffset = -10;
+
+        //鼠标悬浮的事件
+        $(".apreview").hover(function (e) {
+            console.log(123)
+            this.t = this.title;//显示在图片下的标题
+            this.title = "";    //将title置为空，不让文字悬浮提示
+            this.imgSr = this.src;
+                {#console.log(this.src)#}
+            this.c = (this.t != "") ? "<br/>" + this.t : "";
+            $("body").append("<p class='preview'><img src='" + this.imgSr + "' alt='Image preview' width='120' height='120' />" + this.c + "</p>");
+            $(".preview")
+                .css("top", (e.pageY + yOffset) + "px")
+                .css("left", (e.pageX + xOffset) + "px")
+                .fadeIn("fast");
+        },
+        function () {
+            this.title = this.t;//恢复title
+            $(".preview").remove();
+        });
+
+
+        //鼠标移动的事件，让图片随着移动
+        $(".apreview").mousemove(function (e) {
+            $(".preview")
+                .css("top", (e.pageY - yOffset) + "px")
+                .css("left", (e.pageX + xOffset) + "px");
+            });
+        };
+
+
+
+
+
+
+
+    </script>
+
 
 {% endblock %}

@@ -59,7 +59,56 @@
                     data-keyboard="true" data-backdrop="false"
                     id="scrap">报废</button>
         </div>
+
     </div>
+
+{#    <div class="panel-group" id="accordion">#}
+{#        <div class="panel panel-success">#}
+{#            <div class="panel-heading">#}
+{#                <h4 class="panel-title">#}
+{#                    <a data-toggle="collapse" data-parent="#accordion"#}
+{#                       href="#collapseThree">#}
+{#                        查询#}
+{#                    </a>#}
+{#                </h4>#}
+{#            </div>#}
+{#            <div id="collapseThree" class="panel-collapse collapse">#}
+{#                <div class="panel-body">#}
+{#                     <label for="">姓名:</label>#}
+{#                        <input type="text" id="search_name">#}
+{##}
+{#                        <label for="">资产码:</label>#}
+{#                        <input type="text" id="search_code">#}
+{##}
+{#                        <label for="">日期:</label>#}
+{#                        <wui-date#}
+{#                            format="yyyy-mm-dd hh:mm:ss"#}
+{#                            placeholder="请选择开始日期"#}
+{#                            id="date3"#}
+{#                            btns="{'ok':'确定','now':'此刻'}"#}
+{#                            ng-model="date4"#}
+{#                            class="dateinfo"#}
+{#                            >#}
+{#                        </wui-date>#}
+{##}
+{#                        <wui-date#}
+{#                                format="yyyy-mm-dd hh:mm:ss"#}
+{#                                placeholder="请选择结束日期"#}
+{#                                id="date3"#}
+{#                                btns="{'ok':'确定','now':'此刻'}"#}
+{#                                ng-model="date2"#}
+{#                                >#}
+{#                        </wui-date>#}
+{#                </div>#}
+{#                <button type="button" class="btn btn-success" id="search-button">查找</button>#}
+{#                <button type="button" class="btn btn-warning" id="search-clean">重置</button>#}
+{#            </div>#}
+{#        </div>#}
+{#    </div>#}
+
+
+
+
 
 
 <table id="table" class="table table-hover table-bordered"></table>
@@ -105,7 +154,6 @@
                 <label>规格型号
                 <input class="form-control" id="add_type"></label>
             </div>
-
 
             <div class="form-group">
                 <label>资产编码
@@ -460,12 +508,14 @@
                 })
             $('#editModal').modal('hide')
             })
+
         }
 
 
         {#点击新增按钮，填充数据到数据库#}
         $('#btn_add').click(function(){
             $('#addModal').modal();
+
 
             let aInput = document.getElementById("add_sn");
             {#console.log(aInput)#}
@@ -494,6 +544,7 @@
             let name = $('#add_pro_name').val()
             let type = $('#add_type').val()
             {#let num = $('#add_num').val()#}
+            let num = $('#add_num').val()
             let add_sn = $('#add_sn').val()
             let remarks = $('#add_remarks').val()
             let asset_code = $('#add_asset_code').val()
@@ -507,7 +558,8 @@
                 url: '/addinfo/',
                 type: "POST",
                 dataType: "json",
-                data: {pro_name:name,type:type,add_sn:add_sn,remarks:remarks,asset_code:asset_code,current_user:current_user
+                {#data: {pro_name:name,type:type,add_sn:add_sn,remarks:remarks,asset_code:asset_code,current_user:current_user#}
+                data: {pro_name:name,type:type,num:num,add_sn:add_sn,remarks:remarks,asset_code:asset_code,current_user:current_user
                     ,dateTime:dateTime,notime:nonetime,requisition_time:dateTime1},
                 success: function (result) {
                     if(result !== 0){
@@ -521,7 +573,8 @@
                     }
 
                     },
-                })
+                });
+
             $('#addModal').modal('hide')
             })
             {#清空form模态框#}
@@ -554,6 +607,8 @@
                           $("#typeselect").prepend("<option value='0'>请选择</option>");
                           $("#typeselect option:first").prop("selected", 'selected');
 
+                          {#$('.selectpicker').selectpicker('val', '');#}
+                          {#$('.selectpicker').selectpicker('refresh');#}
                       },
                 });
 
@@ -570,7 +625,7 @@
                           'selectinfo': tyselect
                     },
                       success: function (data) {
-                          console.log(data)
+                          {#console.log(data)#}
                           let content='';
                           $.each(data, function(i, item){
                         content+='<option value='+item+'>'+item+'</option>'
@@ -605,6 +660,7 @@
 
                 });
                 $('#ffModal').modal('hide')
+                {#window.location.reload()#}
             })
 
         })
@@ -659,6 +715,24 @@
                 })
 
         })
+
+
+        {# 搜索 #}
+        $('#search-button').click(function () {
+            let name = $('#search_name').val()
+            let code = $('#search_code').val()
+            $.ajax({
+                url: '{% url "myproperty:infodata" %}',
+                  type: 'GET',
+                  datatype: 'json',
+                  data: {
+                      'name': name,
+                      'code': code,
+                  },
+            })
+            $('#table').bootstrapTable({% url "myproperty:infodata" %});
+        })
+
 
 
         $('#datetimepicker').datetimepicker({

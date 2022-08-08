@@ -19,4 +19,21 @@ class Info(models.Model):
     user_one_requisition_time = models.DateTimeField(blank=True, null=True, default='', verbose_name='使用者1领用日期')
     return_date = models.DateTimeField(blank=True, null=True, verbose_name='归还日期', default='')
     remarks = models.TextField(verbose_name='备注', null=True, default=None)
+    sn = models.CharField(max_length=32, verbose_name='sn号', null=True)
+    parameter = models.TextField(verbose_name='具体参数', null=True)
     # alter_time = models.DateTimeField(verbose_name='修改日期', default=timezone.now, null=True)
+
+
+class Grant(models.Model):
+    info_code = models.CharField(max_length=32, verbose_name='资产编码', blank=False, null=False)
+    info = models.ForeignKey(Info, on_delete=models.CASCADE, default='')
+    alters_date = models.DateTimeField(blank=True, verbose_name='时间', null=True)
+    signature = models.ImageField(max_length=255, upload_to='signature/', verbose_name=u'签名', null=True, blank=True)
+    device = models.CharField(max_length=32, verbose_name='设备名', blank=True, null=True)
+    specification = models.CharField(max_length=32, verbose_name='规格型号', blank=True, null=True)
+    user_name = models.CharField(max_length=8, verbose_name='使用人', blank=True, null=True)
+    sn_num = models.CharField(max_length=16, verbose_name='sn', blank=True, null=True)
+
+    class Meta:
+        db_table = 'Grant'
+
