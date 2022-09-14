@@ -40,7 +40,18 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'corsheaders',
     'myproperty',
+    'xadmin',
+    'crispy_forms',
+    'reversion',
+    'django.conf',
+    'import_export',
+    # 'guardian',
 ]
+
+# AUTHENTICATION_BACKENDS = [
+#     'django.contrib.auth.backends.ModelBackend',
+#     'guardian.backends.ObjectPermissionBackend',
+# ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

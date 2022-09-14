@@ -1,5 +1,8 @@
 from django.urls import path
 from myproperty import views
+from django.views.generic import TemplateView
+from myproperty import views
+from myproperty.views import LoginView, LogoutView
 
 from django.conf.urls.static import static
 from djangoProject import settings
@@ -7,7 +10,11 @@ from djangoProject import settings
 app_name = 'myproperty'
 
 urlpatterns = [
-    path('', views.index, name='index'),
+    # path('', views.index, name='index'),
+    path('index/', TemplateView.as_view(template_name='index.html'), name='index'),
+    path('login/', LoginView.as_view(), name='login'),
+    path('logout/', LogoutView.as_view(), name='logout'),
+
     path('infodata/', views.infodata, name='infodata'),
     path('navigation/', views.navigation, name='navigation'),
     path('management/', views.management, name='management'),
@@ -26,6 +33,9 @@ urlpatterns = [
 
     path('grantdata/', views.grantdata, name='grantdata'),
     path('showsign/', views.showsign, name='showsign'),
+    path('calendar/', views.calendar, name='calendar'),
+
+
 
     # path('findsearch/', views.findsearch, name='findsearch'),
     # path('distribute/', views.distribute, name='distribute'),

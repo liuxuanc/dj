@@ -9,9 +9,9 @@
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
 {#    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js" integrity="sha256-7dA7lq5P94hkBsWdff7qobYkp9ope/L5LQy2t/ljPLo=" crossorigin="anonymous"></script>#}
     <script src="{% static 'AdminLTE-master/plugins/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
-    <link href="https://cdn.bootcdn.net/ajax/libs/bootstrap-select/1.14.0-beta3/css/bootstrap-select.min.css" rel="stylesheet">
-    <script src="https://cdn.bootcdn.net/ajax/libs/bootstrap-select/1.14.0-beta3/js/bootstrap-select.min.js"></script>
-    <script src="https://cdn.bootcdn.net/ajax/libs/bootstrap-select/1.14.0-beta3/js/i18n/defaults-zh_CN.min.js"></script>
+    <link href="https://cdn.bootcdn.net/ajax/libs/bootstrap-select/1.14.0-beta2/css/bootstrap-select.min.css" rel="stylesheet">
+    <script src="https://cdn.bootcdn.net/ajax/libs/bootstrap-select/1.14.0-beta2/js/bootstrap-select.min.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/bootstrap-select/1.14.0-beta2/js/i18n/defaults-zh_CN.min.js"></script>
 
     <link rel="stylesheet" href="{% static 'css/bootstrap-table_1.19.1.css' %}">
 {#    <script src="https://unpkg.com/bootstrap-table@1.19.1/dist/bootstrap-table.min.js"></script>#}
@@ -34,14 +34,19 @@
 
 {% block content %}
 
+{#    {{ perms.myproperty }}#}
+
 {#    新增按钮#}
     <div class="row" id="toolbar">
+        {% if perms.myproperty.add_info %}
         <div class="btn-sm">
             <button class="btn btn-w-m btn-primary glyphicon glyphicon-plus" data-toggle="modal"
                     href="#addType" data-keyboard="true" data-backdrop="false"
                     id="btn_add">新增</button>
         </div>
+        {% endif %}
 
+        {% if perms.myproperty.change_info %}
         <div class="btn-sm">
             <button class="btn btn-w-m btn-primary glyphicon glyphicon-plus" data-toggle="modal"
                     href="#addType" data-keyboard="true" data-backdrop="false"
@@ -53,17 +58,19 @@
                     data-keyboard="true" data-backdrop="false"
                     id="recovery">回收</button>
         </div>
+        {% endif %}
 
+        {% if perms.myproperty.delete_info %}
         <div class="btn-sm">
             <button class="btn btn-w-m btn-danger glyphicon glyphicon-plus" data-toggle="modal"
                     data-keyboard="true" data-backdrop="false"
                     id="scrap">报废</button>
         </div>
-
+        {% endif %}
     </div>
 
-{#    <div class="panel-group" id="accordion">#}
-{#        <div class="panel panel-success">#}
+    <div class="panel-group" id="accordion">
+        <div class="panel panel-success">
 {#            <div class="panel-heading">#}
 {#                <h4 class="panel-title">#}
 {#                    <a data-toggle="collapse" data-parent="#accordion"#}
@@ -72,39 +79,39 @@
 {#                    </a>#}
 {#                </h4>#}
 {#            </div>#}
-{#            <div id="collapseThree" class="panel-collapse collapse">#}
-{#                <div class="panel-body">#}
-{#                     <label for="">姓名:</label>#}
-{#                        <input type="text" id="search_name">#}
-{##}
-{#                        <label for="">资产码:</label>#}
-{#                        <input type="text" id="search_code">#}
-{##}
-{#                        <label for="">日期:</label>#}
-{#                        <wui-date#}
-{#                            format="yyyy-mm-dd hh:mm:ss"#}
-{#                            placeholder="请选择开始日期"#}
-{#                            id="date3"#}
-{#                            btns="{'ok':'确定','now':'此刻'}"#}
-{#                            ng-model="date4"#}
-{#                            class="dateinfo"#}
-{#                            >#}
-{#                        </wui-date>#}
-{##}
-{#                        <wui-date#}
-{#                                format="yyyy-mm-dd hh:mm:ss"#}
-{#                                placeholder="请选择结束日期"#}
-{#                                id="date3"#}
-{#                                btns="{'ok':'确定','now':'此刻'}"#}
-{#                                ng-model="date2"#}
-{#                                >#}
-{#                        </wui-date>#}
-{#                </div>#}
-{#                <button type="button" class="btn btn-success" id="search-button">查找</button>#}
-{#                <button type="button" class="btn btn-warning" id="search-clean">重置</button>#}
-{#            </div>#}
-{#        </div>#}
-{#    </div>#}
+            <div id="collapseThree" class="panel-collapse collapse">
+                <div class="panel-body">
+                     <label for="">姓名:</label>
+                        <input type="text" id="search_name">
+
+                        <label for="">资产码:</label>
+                        <input type="text" id="search_code">
+
+                        <label for="">日期:</label>
+                        <wui-date
+                            format="yyyy-mm-dd hh:mm:ss"
+                            placeholder="请选择开始日期"
+                            id="date3"
+                            btns="{'ok':'确定','now':'此刻'}"
+                            ng-model="date4"
+                            class="dateinfo"
+                            >
+                        </wui-date>
+
+                        <wui-date
+                                format="yyyy-mm-dd hh:mm:ss"
+                                placeholder="请选择结束日期"
+                                id="date3"
+                                btns="{'ok':'确定','now':'此刻'}"
+                                ng-model="date2"
+                                >
+                        </wui-date>
+                </div>
+                <button type="button" class="btn btn-success" id="search-button">查找</button>
+                <button type="button" class="btn btn-warning" id="search-clean">重置</button>
+            </div>
+        </div>
+    </div>
 
 
 
@@ -231,7 +238,6 @@
                 <div class="col-sm-6 add_select_cname">
 {#                <select class="selectpicker show-tick form-control" id="typeselect">#}
                 <select class="form-control" id="codeselect" title="---请选择---" required="required">
-{#                     <option value="请选择">请选择</option>#}
                  </select>
                  </div>
             </div>
@@ -440,10 +446,11 @@
             });
 
         function actionFormatter(value,rows) {
+            {% if perms.myproperty.change_info %}
             return '<button onclick="edit(' + rows.id + ')" class="btn btn-xs btn-info">编辑</button> '
+            {% endif %}
         }
             {#'<button onclick="deleteUser('+ rows.id +')" class="btn btn-xs btn-danger">删除</button>'#}
-
 
         {#点击编辑按钮，填充数据到表格#}
         function edit(id) {
@@ -648,7 +655,7 @@
                           'user':user,
                     },
                       success: function (result) {
-                          console.log(result)
+                          {#console.log(result)#}
                         if(result === 'success'){
                             alert('分发成功!');
                         window.location.reload()
@@ -672,7 +679,7 @@
 
             $('#recover_user').change(function () {
                 let select = $("#recover_user option:selected").text()
-
+                $("#recover_assets").empty();
                 $.ajax({
                       url: '{% url "myproperty:selectrecover" %}',
                       type: 'GET',
@@ -681,14 +688,11 @@
                           'select_user': select
                     },
                     success: function (datas) {
-                        $.each(datas, function (index, item) {
-                            $("#recover_assets").append("<option value='"+datas[index]+"'>"+datas[index]+"</option>");
-                        });
-
+                        for(let i = 0; i < datas.length; i++) {
+                            $("#recover_assets").append("<option value='"+i+"'>"+datas[i]+"</option>");
+                        }
                         $('#recover_assets').selectpicker('refresh');
-                        $('#recover_assets').selectpicker('render');
-
-
+                        {#$('#recover_assets').selectpicker('render');#}
                       },
                     })
             })
@@ -696,7 +700,6 @@
                 $('#hssave').unbind('click').bind('click',function (){
                     let select = $("#recover_assets option:selected").text()
                     let user = $("#recover_user option:selected").text()
-                    {#console.log(select)#}
                     $.ajax({
                       url: '{% url "myproperty:savehsbtn" %}',
                       type: 'POST',
@@ -705,10 +708,15 @@
                           'select': select,
                           'user': user,
                       },
-                      success: function () {
-                          alert('回收成功!');
-                          window.location.reload()
+                      success: function (data) {
 
+                        if(data.length === 0){
+                            alert('回收失败');
+                        }else {
+                            alert('回收成功');
+                        }
+                        window.location.reload()
+                        {#$("#recover_assets").empty();#}
                       },
                     });
                     $('#hsModal').modal('hide')

@@ -16,8 +16,10 @@ scratch. This page gets rid of all links and provides the needed markup only.
   <!-- Theme style -->
   <link rel="stylesheet" href="{% static 'AdminLTE-master/dist/css/adminlte.min.css' %}">
 
-  <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
-{#  <script src="{% static 'js/jquery-3.6.0.min.js' %}"></script>#}
+  <link rel="shortcut icon" href="{% static "img/favicon.ico" %}" />
+
+{#  <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>#}
+  <script src="{% static 'js/jquery-3.6.0.min.js' %}"></script>
 
 
   {% block css %}{% endblock %}
@@ -42,6 +44,13 @@ scratch. This page gets rid of all links and provides the needed markup only.
 
     <!-- Right navbar links -->
     <ul class="navbar-nav ml-auto">
+      <li class="nav-item">
+        <a class="nav-link" href="{% url 'myproperty:logout' %}" role="button">
+        退出
+        </a>
+      </li>
+
+
       <!-- Navbar Search -->
       <li class="nav-item">
         <a class="nav-link" data-widget="navbar-search" href="#" role="button">
@@ -85,14 +94,26 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <!-- Sidebar -->
     <div class="sidebar">
       <!-- Sidebar user panel (optional) -->
-{#      <div class="user-panel mt-3 pb-3 mb-3 d-flex">#}
-{#        <div class="image">#}
-{#          <img src="{% static 'AdminLTE-master/dist/img/user2-160x160.jpg' %}" class="img-circle elevation-2" alt="User Image">#}
-{#        </div>#}
-{#        <div class="info">#}
-{#          <a href="#" class="d-block">Alexander Pierce</a>#}
-{#        </div>#}
-{#      </div>#}
+      {% if request.user.is_authenticated %}
+          <div class="user-panel mt-2 pb-2 mb-2 d-flex">
+            <div class="info">
+{#                <a href="{% url 'myproperty:index' %}" class="d-block">xxx </a>#}
+                <a href="{% url 'myproperty:index' %}" class="d-block">{{ request.user.username }}</a>
+{#                <a href="{% url 'myproperty:index' %}" class="d-block">{{ request.session.user_name }}</a>#}
+
+            </div>
+          </div>
+
+          {% else %}
+          <div class="user-panel mt-2 pb-2 mb-2 d-flex">
+            <div class="info">
+              <a href="{% url 'myproperty:login' %}" class="d-block">请登录</a>
+            </div>
+          </div>
+
+      {% endif %} 
+
+
 
       <!-- SidebarSearch Form -->
       <div class="form-inline">
@@ -142,6 +163,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
 
             </ul>
           </li>
+
 {#          <li class="nav-item">#}
 {#            <a href="#" class="nav-link">#}
 {#              <i class="nav-icon fas fa-th"></i>#}
@@ -164,8 +186,6 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <div class="content-header">
 {#      <div class="container-fluid">#}
 {#        <div class="row mb-2">#}
-
-
              {% block content %}{% endblock %}
 
 
@@ -191,7 +211,14 @@ scratch. This page gets rid of all links and provides the needed markup only.
 </div>
 
 
-{% block script %}{% endblock %}
+{% block script %}
+    <script>
+        {#$('.nav-treeview a').click(function (){#}
+        {#    $('.nav-treeview a').removeClass('active');#}
+        {#    $(this).addClass('active');})#}
+
+    </script>
+{% endblock %}
 {#<script src="{% static 'AdminLTE-master/plugins/jquery/jquery.min.js' %}"></script>#}
 {#<!-- Bootstrap 4 -->#}
 {#<script src="{% static 'AdminLTE-master/plugins/bootstrap/js/bootstrap.bundle.min.js' %}"></script>#}

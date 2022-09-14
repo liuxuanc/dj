@@ -61,10 +61,10 @@ from email.mime.text import MIMEText
 # json_object = json.dumps(dictionary)
 #
 # print(dictionary.values())
-# pro_name = 'ÁõÐù'
-# typed = 'super'
+# pro_name = 'xsx'
+# typed = '123'
 # num = 4
-# asset_code = 'nb'
+# asset_code = 'ff'
 # requisition_time = 'today'
 #
 # #
@@ -360,45 +360,147 @@ from multiprocessing import Process
 # t1 = MyThread()
 # t1.run()
 # print('Ö÷½ø³Ì')
-import pymysql
-import sys
-import base64
-import io
-from PIL.Image import Image
-import os
+# import pymysql
+# import sys
+# import base64
+# import io
+# from PIL.Image import Image
+# import os
+#
+# def dbinfo():
+#     conn = ""
+#     conn = pymysql.connect(host='127.0.0.1', port=3306, user="root", password='123', db='infos',
+#                            charset='utf8', cursorclass=pymysql.cursors.DictCursor)
+#     cur = conn.cursor()
+#     if not cur:
+#         return "access db is fail!"
+#     else:
+#         return conn
+#
+# # fp = open('1.jpg','rb').read()
+# # base64_date = base64.b64encode(fp)
+#
+# try:
+#     conn = dbinfo()
+#     conncur = conn.cursor()
+#     sql_selectimage = "select * from infos.myproperty_user WHERE id=5"
+#     conncur.execute(sql_selectimage)
+#     softpath = conncur.fetchall()
+#     softpathlist = [x['username'].decode('gbk') for x in softpath]
+#     print(softpathlist)
+#     for i in softpathlist:
+#         print(i)
+#         imgdata = base64.b64decode(i)
+#         print(imgdata)
+#         with open('123.png', 'wb') as f:
+#             f.write(imgdata)
+#
+#     conn.commit()
+#     conn.close()
+#
+# except pymysql.Error as e :
+#     # print(e)
+#     sys.exit(1)
 
-def dbinfo():
-    conn = ""
-    conn = pymysql.connect(host='127.0.0.1', port=3306, user="root", password='123', db='infos',
-                           charset='utf8', cursorclass=pymysql.cursors.DictCursor)
-    cur = conn.cursor()
-    if not cur:
-        return "access db is fail!"
-    else:
-        return conn
+# a = [{'title': 'Ì§Í·', 'date': '2022'}, {'title': 'Ì§Í·', 'date': '2021'}]
+# for i in a:
+#     print(i)
+#     print(type(i))
+#
+# import datetime
+from datetime import date
+#
+# print(date.today())
+# print(date.today())
 
-# fp = open('1.jpg','rb').read()
-# base64_date = base64.b64encode(fp)
+import chinese_calendar
+from datetime import datetime as dt
+import pandas as pd
+import datetime
 
-try:
-    conn = dbinfo()
-    conncur = conn.cursor()
-    sql_selectimage = "select * from infos.myproperty_user WHERE id=5"
-    conncur.execute(sql_selectimage)
-    softpath = conncur.fetchall()
-    softpathlist = [x['username'].decode('gbk') for x in softpath]
-    print(softpathlist)
-    for i in softpathlist:
-        print(i)
-        imgdata = base64.b64decode(i)
-        print(imgdata)
-        with open('123.png', 'wb') as f:
-            f.write(imgdata)
+today = date.today()
 
-    conn.commit()
-    conn.close()
+# tendays_age = (today + datetime.timedelta(days=-7)).strftime("%Y-%m-%d")
+twentydays_later = (today + datetime.timedelta(days=+34)).strftime("%Y-%m-%d")
 
-except pymysql.Error as e :
-    # print(e)
-    sys.exit(1)
+# start_time = dt.strptime(str(tendays_age), '%Y-%m-%d')
+end_time = dt.strptime(str(twentydays_later), '%Y-%m-%d')
+
+# workdays = pd.DataFrame(chinese_calendar.get_workdays(today, end_time))
+#
+# # workdays = workdays.rename(columns={0: 'ÈÕÆÚ'})
+# # workdays['ÊôÐÔ'] = '¹¤×÷ÈÕ'
+# print(workdays)
+
+
+# workdays = chinese_calendar.get_workdays(today, end_time)
+# holidays = chinese_calendar.get_holidays(today, end_time)
+# workdays_len = len(workdays)
+#
+# c = []
+# a = []
+# x = []
+# for workday in workdays:
+#     c.append(workday.strftime("%W"))
+# for i in range(0, len(c)):
+#     if i + 1 < len(c):
+#         if c[i] == c[i + 1]:
+#             x.append(c[i])
+#         else:
+#             x.append(c[i])
+#             a.append(x)
+#             x = []
+#     else:
+#         x.append(c[len(c) - 1])
+#         a.append(x)
+#
+# num = []
+# for i in a:
+#     num.append(len(i))
+# print(num)
+#
+# qy = int(c[0]) % 3
+# if qy == 0:
+#     user_list = ['ºúÉÙ¹ð', '½¯¾§ÐÀ', 'ÁõÐù']
+# elif qy == 1:
+#     user_list = ['½¯¾§ÐÀ', 'ÁõÐù', 'ºúÉÙ¹ð']
+# else:
+#     user_list = ['ÁõÐù', 'ºúÉÙ¹ð', '½¯¾§ÐÀ']
+#
+# color = ['#7B68EE', '#378006', '#F4A460']
+#
+# x = 0
+# for i in range(len(num)):
+#     if len(num) > len(user_list):
+#         user_list.append(user_list[x])
+#         color.append(color[x])
+#         x += 1
+# print(user_list)
+#
+# new_list = []
+# i = 0
+# for user in user_list:
+#     # print(num[user_list.index(user)])
+#     # new_list += num[user_list.index(user)] * list(user.split())
+#     new_list += num[i] * list(user.split())
+#     i += 1
+#
+# j = 0
+# new_color = []
+# for col in color:
+#     new_color += num[j] * list(col.split())
+#     j += 1
+#
+# calendar_list = []
+#
+# # print(workdays)
+# for i in range(len(workdays)):
+#     dict1 = {'title': new_list[i], 'start': workdays[i], 'color': new_color[i]}
+#     calendar_list.append(dict1)
+# print(calendar_list)
+
+
+
+
+
 

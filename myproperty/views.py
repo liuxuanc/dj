@@ -1,78 +1,59 @@
-import math
 import re
-import threading
 import requests
 import json
 import os
 import time
+from datetime import date
 import base64
 from mycelery.wjw.tasks import runwjw, getredis
-from datetime import datetime
-from django.http import JsonResponse, HttpResponse
-from django.shortcuts import render
+import chinese_calendar
+import datetime
+from datetime import datetime as dt
+from django.http import JsonResponse, HttpResponse, HttpResponseRedirect
+from django.shortcuts import render, redirect
 from django.views.decorators.csrf import csrf_exempt
-
+from django.views.generic.base import View
 from myproperty.models import Info, Grant
+from django.contrib.auth import authenticate, logout, login
+from django.urls import reverse
+from django.contrib.auth.decorators import login_required, permission_required
+
 # Create your views here.
+
+
+class LogoutView(View):
+    def get(self, request, *args, **kwargs):
+        logout(request)
+        return HttpResponseRedirect(reverse('myproperty:login'))
+
+
+class LoginView(View):
+    def get(self, request, *args, **kwargs):
+        if request.user.is_authenticated:
+            return HttpResponseRedirect(reverse('myproperty:index'))
+        return render(request, 'login.html')
+
+    def post(self, request, *args, **kwargs):
+        username = request.POST.get('username', '')
+        password = request.POST.get('password', '')
+
+        user = authenticate(username=username, password=password)
+        if user is not None:
+            login(request, user)
+            # request.session['is_login'] = True
+            # request.session['user_name'] = username
+            # return render(request, 'index.html', {'username': username})
+            return redirect(reverse('myproperty:index'))
+        else:
+            return render(request, 'login.html', {'msg': '用户名或密码错误'})
 
 
 class DateEncoder(json.JSONEncoder):
     def default(self, obj):
-        if isinstance(obj, datetime):
+        if isinstance(obj, dt):
             return obj.strftime("%Y-%m-%d %H:%M:%S")
         else:
             return json.JSONEncoder.default(self, obj)
-
-
-# class GetWjw(object):
-#     def __init__(self):
-#         self.app_key = 'wjSbXPqOAxcM2mkhrt'
-#         self.timestamp = round(time.time())
-#         self.short_id = 'UZBZJvtQjf2'
-#         self.app_secret = 'DmbO5w7qBQC2GR6Y3hvJerUN1Xu8Hxs0'
-#
-#     def run(self, page):
-#         page = str(page)
-#         signature = self.app_key + page + self.short_id + str(self.timestamp) + self.app_secret
-#         signature_hash = hashlib.md5(signature.encode(encoding='UTF-8')).hexdigest()
-#         all_url = 'https://open.wenjuan.com/openapi/v4/get_rspd_list?app_key=' + self.app_key + '&timestamp=' \
-#                   + str(self.timestamp) + '&page=' + page + '&short_id=' + self.short_id + \
-#                   '&signature=' + signature_hash
-#         res = requests.get(all_url)
-#         datas = res.json()
-#         total_count = datas['data']['total_count']
-#         # print(datas)
-#         return total_count, datas
-#
-#     @staticmethod
-#     def getsign(now_count, datas, page):
-#         num = now_count - (page - 1)*20 - 1
-#         last_data = datas['data']['rspd_list'][num:]
-#         name_list = []
-#         sign_list = []
-#         for last in last_data:
-#             # print(last)
-#             name = last['Q1']['answer']
-#             sign = last['Q3']['answer'][8:]
-#             name_list.append(name)
-#             sign_list.append(sign)
-#         return name_list, sign_list
-#
-#
-# def runwjw():
-#     page = 1
-#     count = GetWjw().run(page)[0]
-#     wjw = GetWjw()
-#     page = math.ceil(count / 20)
-#     while count == GetWjw().run(page)[0]:
-#         schedule.run_pending()
-#         time.sleep(3)
-#         break
-#     data = GetWjw().run(page)[1]
-#     wjw.getsign(count, data, page)
-#     data_tuple = wjw.getsign(count, data, page)
-#     print(data_tuple)
-    # return data_tuple
 
 
 def index(request):
@@ -94,6 +75,8 @@ def infodata(request):
         return render(request, 'index.html')
 
 
+@login_required(login_url='myproperty:login')
+@permission_required('myproperty.add_info', raise_exception=True)
 def management(request):
     lists = []
     no_used = Info.objects.filter(current_user='').distinct()
@@ -103,27 +86,8 @@ def management(request):
     return render(request, 'management.html', locals())
 
 
-# def findsearch(request):
-#     # code = request.GET['code']
-#     if request.method == "GET":
-#         name = request.GET['name']
-#         infos = Info.objects.filter(current_user=name)
-#         total = infos.count()
-#         rows = list(infos.values())
-#         return JsonResponse({'total': total, 'rows': rows})
-#
-#     else:
-#         return render(request, 'index.html')
-    # return HttpResponse(json.dumps(name, cls=DateEncoder), content_type='application/json')
-
-
 def showdata(request):
     # # global startdate, endtdate, model1, model2
-    # datas = request.GET.dict()
-    # # print(datas)
-    # data = list(datas.items())[1]
-    # # print(data)
-    # i_d = data[1]
     i_d = request.GET['userId']
     pro_name = Info.objects.get(id=i_d).pro_name
     typed = Info.objects.get(id=i_d).type
@@ -136,7 +100,6 @@ def showdata(request):
     user_one = Info.objects.get(id=i_d).user_one
     # user_one_requisition_time = Info.objects.get(id=i_d).user_one_requisition_time
     remarks = Info.objects.get(id=i_d).remarks
-
     dic = {'pro_name': pro_name, 'type': typed, 'num': num, 'add_time': add_time, 'asset_code': asset_code,
            'current_user': current_user, 'requisition_time': requisition_time, 'user_one': user_one, 'sn': sn,
            'remarks': remarks}
@@ -234,7 +197,6 @@ def saveinfo(request):
 
 def getlentype(request):
     sn = request.GET['sn']
-    # print(sn)
     res = os.popen("curl -X GET -s -k https://newsupport.lenovo.com.cn/api/drive/drive_query?searchKey={}".format(sn))
     data = eval(res.read())
     if data['statusCode'] in ['200202', 422]:
@@ -272,6 +234,7 @@ def addinfo(request):
     time1 = request.POST.get('dateTime')
     nonetime = request.POST.get('notime')
     requisition_time = request.POST.get('requisition_time')
+    print(time1)
 
     if not (pro_name and asset_code and time1):
         result = 0
@@ -301,9 +264,9 @@ def selectinfo(request):
 
 
 def selectsn(request):
-    code_list = []
     data = request.GET['selectinfo']
     objs = Info.objects.filter(current_user='').filter(type=data)
+    code_list = []
     for obj in objs:
         code_list.append(obj.asset_code)
     code_list = list(set(code_list))
@@ -354,7 +317,7 @@ def selectrecover(request):
         code = obj.asset_code
         parameter = pro_name + '(' + model + ')' + '-----' + code
         parameter_list.append(parameter)
-
+    # print(parameter_list)
     return JsonResponse(parameter_list, safe=False)
 
 
@@ -392,7 +355,7 @@ def grantdata(request):
 def showsign(request):
     i_d = request.GET['userId']
     obj = Grant.objects.get(id=i_d)
-    user = obj.user_name
+    # user = obj.user_name
     img = obj.signature
     imgdata = base64.b64decode(img)
     with open('static/showsign/' + i_d + '.png', 'wb') as f:
@@ -400,3 +363,60 @@ def showsign(request):
     # return render(request, 'workflow.html', locals())
     return HttpResponse(json.dumps(i_d), content_type='application/json')
 
+
+def calendar(request):
+    today = date.today()
+    twentydays_later = (today + datetime.timedelta(days=+24)).strftime("%Y-%m-%d")
+    end_time = dt.strptime(str(twentydays_later), '%Y-%m-%d')
+    workdays = chinese_calendar.get_workdays(today, end_time)
+    c = []
+    a = []
+    x = []
+    for workday in workdays:
+        c.append(workday.strftime("%W"))
+    for i in range(0, len(c)):
+        if i + 1 < len(c):
+            if c[i] == c[i + 1]:
+                x.append(c[i])
+            else:
+                x.append(c[i])
+                a.append(x)
+                x = []
+        else:
+            x.append(c[len(c) - 1])
+            a.append(x)
+    num = []
+    for i in a:
+        num.append(len(i))
+
+    qy = int(c[0]) % 3
+    if qy == 0:
+        user_list = ['胡少桂', '蒋晶欣', '刘轩']
+        color = ['#378006', '#4169E1', '#F4A460']
+    elif qy == 1:
+        user_list = ['蒋晶欣', '刘轩', '胡少桂']
+        color = ['#4169E1', '#F4A460', '#378006']
+    else:
+        user_list = ['刘轩', '胡少桂', '蒋晶欣']
+        color = ['#F4A460', '#378006', '#4169E1']
+    x = 0
+    for i in range(len(num)):
+        if len(num) > len(user_list):
+            user_list.append(user_list[x])
+            color.append(color[x])
+            x += 1
+    j = 0
+    new_color = []
+    for col in color:
+        new_color += num[j] * list(col.split())
+        j += 1
+    new_list = []
+    i = 0
+    for user in user_list:
+        new_list += num[i] * list(user.split())
+        i += 1
+    calendar_list = []
+    for i in range(len(workdays)):
+        dict1 = {'title': new_list[i], 'start': workdays[i], 'color': new_color[i]}
+        calendar_list.append(dict1)
+    return JsonResponse(calendar_list, safe=False)
