@@ -17,7 +17,8 @@ from myproperty.models import Info, Grant
 from django.contrib.auth import authenticate, logout, login
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required, permission_required
-
+from .forms import RegisterForm
+from django.contrib.auth.models import Group, User
 # Create your views here.
 
 
@@ -25,6 +26,25 @@ class LogoutView(View):
     def get(self, request, *args, **kwargs):
         logout(request)
         return HttpResponseRedirect(reverse('myproperty:login'))
+
+
+def register(request):
+    if request.method == 'GET':
+        form = RegisterForm()
+    else:
+        form = RegisterForm(request.POST)
+        if form.is_valid():
+            new_user = form.save(commit=False)
+            new_user.set_password(form.cleaned_data['password'])
+            new_user.save()
+
+            user_id = User.objects.get(username=form.cleaned_data['username']).id
+            group_id = Group.objects.get(name='View_Myproperty_Group').id
+            new_user.groups.add(user_id, group_id)
+
+            return redirect('myproperty:login')
+    context = {'form': form}
+    return render(request, 'register.html', context)
 
 
 class LoginView(View):
@@ -57,6 +77,7 @@ class DateEncoder(json.JSONEncoder):
 
 
 def index(request):
+
     return render(request, 'index.html', locals())
 
 
@@ -69,20 +90,27 @@ def infodata(request):
         infos = Info.objects.all()
         total = infos.count()
         rows = list(infos.values())
-        return JsonResponse({'total': total, 'rows': rows})
+        if request.user.has_perm('myproperty.change_info'):
+            return JsonResponse({'total': total, 'rows': rows})
+
+        obj = Info.objects.filter(current_user=request.user)
+        total_task = obj.count()
+        row = list(obj.values())
+        return JsonResponse({'total': total_task, 'rows': row})
 
     else:
         return render(request, 'index.html')
 
 
 @login_required(login_url='myproperty:login')
-@permission_required('myproperty.add_info', raise_exception=True)
+@permission_required('myproperty.view_info', raise_exception=True)
 def management(request):
     lists = []
     no_used = Info.objects.filter(current_user='').distinct()
     for i in no_used.values('pro_name'):
         lists.append(i.get('pro_name'))
     user_list = ['刘轩', '胡少桂', '蒋叶飞', '蒋晶欣', '张林', '王鑫']
+    # task = Info.objects.filter(current_user='刘轩')
     return render(request, 'management.html', locals())
 
 
@@ -103,6 +131,7 @@ def showdata(request):
     dic = {'pro_name': pro_name, 'type': typed, 'num': num, 'add_time': add_time, 'asset_code': asset_code,
            'current_user': current_user, 'requisition_time': requisition_time, 'user_one': user_one, 'sn': sn,
            'remarks': remarks}
+    # print(dic)
 
     return HttpResponse(json.dumps(dic, cls=DateEncoder), content_type='application/json')
 
@@ -336,8 +365,9 @@ def savehsbtn(request):
     return HttpResponse(json.dumps(code), content_type='application/json')
 
 
+@login_required(login_url='myproperty:login')
+@permission_required('myproperty.change_grant ', raise_exception=True)
 def workflow(request):
-
     return render(request, 'workflow.html', locals())
 
 

@@ -29,6 +29,12 @@ class Info(models.Model):
         verbose_name = '资产表'
         verbose_name_plural = verbose_name
 
+        permissions = (
+            ("Info_select", "常用任务查看权限"),
+            ("Info_change", "常用任务修改权限"),
+            ("Info_run", "执行常用任务"),
+        )
+
     def __str__(self):
         return self.pro_name
 

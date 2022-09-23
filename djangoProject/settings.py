@@ -45,13 +45,13 @@ INSTALLED_APPS = [
     'reversion',
     'django.conf',
     'import_export',
-    # 'guardian',
+    'guardian',
 ]
 
-# AUTHENTICATION_BACKENDS = [
-#     'django.contrib.auth.backends.ModelBackend',
-#     'guardian.backends.ObjectPermissionBackend',
-# ]
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    'guardian.backends.ObjectPermissionBackend',
+]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

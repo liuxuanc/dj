@@ -25,9 +25,9 @@ $('.flip-modal').addEventListener('click', function(e){
     $('.flip-modal').style.display = 'none'
   }
 })
-// document.addEventListener('click', function(){
-//   $('.flip-modal').style.display = 'none'
-// })
+document.addEventListener('click', function(){
+  $('.flip-modal').style.display = 'none'
+})
 //
 // $('.modal-login form').addEventListener('submit', function(e){
 //   e.preventDefault()

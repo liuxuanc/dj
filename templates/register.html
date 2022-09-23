@@ -8,56 +8,61 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
-{#  <link rel="stylesheet" href="https://unpkg.com/font-awesome@4.7.0/css/font-awesome.min.css">#}
   <link rel="stylesheet" href="{% static 'css/common.css' %}">
   <link rel="stylesheet" href="{% static 'css/style.css' %}">
-{#  <link rel="icon" href="{% static 'img/login.ico' %}" type="image/x-icon">#}
-{#  <link rel="Shortcut Icon" href="{% static 'img/login.ico' %}" type="image/x-icon">#}
   <title>登录|注册</title>
 </head>
 <body>
 <header>
-  <a class="login" href="#">
+  <a class="register" href="#">
     <i class="fa fa-user-circle"></i>
   </a>
 </header>
 <main>
-  <div class="flip-modal login">
-    <div class="modal modal-login">
+  <div class="flip-modal register">
+    <div class="modal modal-register">
       <a class="close" href="#">
         <i class="fa fa-close"></i>
       </a>
       <div class="tabs">
-        <a class="login active" href="{% url 'myproperty:login' %}">登录</a>
-{#        <a class="register" href="{% url 'myproperty:login' %}">注册</a>#}
-        <a class="register" href="{% url 'myproperty:register' %}">注册</a>
-
+        <a class="login" href="{% url 'myproperty:login' %}">登录</a>
+        <a class="register active" href="javascript:void(0);">注册</a>
+{#        <a class="register" href="{% url 'myproperty:register' %}">注册</a>#}
       </div>
       <div class="content">
         <div class="errormsg"></div>
-        <form class="form" action="{% url 'myproperty:login' %}" method="post">
+        <form class="form" action="{% url 'myproperty:register' %}" method="post">
             {% csrf_token %}
           <div class="input-field">
             <i class="fa fa-user-o"></i>
               <label>
-                  <input name="username" type="text" placeholder="用户名">
+                  <input name="username" type="text" placeholder="输入用户名">
               </label>
           </div>
           <div class="input-field">
             <i class="fa fa-lock"></i>
               <label>
-                  <input name="password" type="password" placeholder="密码">
+                  <input name="password" type="password" placeholder="输入密码">
               </label>
           </div>
           <div class="input-field">
-            <span style="color:red;">{{ msg }}
+            <i class="fa fa-lock"></i>
+              <label>
+                  <input name="password1" type="password" placeholder="再次输入密码">
+              </label>
+          </div>
+
+          <div class="input-field">
+            <span style="color:red;">
+              {% for err in form.errors.items %}
+                {{ err }}
+              {% endfor %}
             </span>
-            <input type="submit" href="{% url 'myproperty:index' %}" value="登录">
+            <input type="submit" href="{% url 'myproperty:login' %}" value="注册">
           </div>
         </form>
       </div>
     </div>
-
   </div>
 </main>
 {#  <script type="text/javascript" src="{% static 'js/login.js' %}"></script>#}

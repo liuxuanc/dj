@@ -167,26 +167,25 @@
                 <input class="form-control" id="add_asset_code" placeholder="必填项"></label>
             </div>
 
-            <div class="form-group">
-                <label>使用者
-                <input class="form-control" id="add_current_user"></label>
-            </div>
-
-             <div class="form-group">
-                <label>领用日期</label>
-                    <div class="input-group date col-sm-6" id="datetimepickers" data-target-input="nearest">
-                        <label for="dateTime1"></label><input type="text" class="form-control datetimepicker-input" data-target="#datetimepickers" id="dateTime1">
-                        <div class="input-group-append" data-target="#datetimepickers" data-toggle="datetimepicker">
-                            <div class="input-group-text"><i class="fa fa-calendar"></i></div>
-                        </div>
-                    </div>
-            </div>
+{#            <div class="form-group">#}
+{#                <label>使用者#}
+{#                <input class="form-control" id="add_current_user"></label>#}
+{#            </div>#}
+{##}
+{#             <div class="form-group">#}
+{#                <label>领用日期</label>#}
+{#                    <div class="input-group date col-sm-6" id="datetimepickers" data-target-input="nearest">#}
+{#                        <label for="dateTime1"></label><input type="text" class="form-control datetimepicker-input" data-target="#datetimepickers" id="dateTime1">#}
+{#                        <div class="input-group-append" data-target="#datetimepickers" data-toggle="datetimepicker">#}
+{#                            <div class="input-group-text"><i class="fa fa-calendar"></i></div>#}
+{#                        </div>#}
+{#                    </div>#}
+{#            </div>#}
 
             <div class="form-group">
                 <label>备注
                 <input class="form-control" id="add_remarks"></label>
             </div>
-
         </form>
 
       </div>
@@ -208,7 +207,6 @@
 {#        <h4 class="modal-title" id="gridSystemModalLabel"></h4>#}
       </div>
       <div class="modal-body">
-
           <form method="post" enctype="multipart/form-data">
             {% csrf_token %}
             <div class="form-group">
@@ -297,22 +295,6 @@
                 </select>
                  </div>
             </div>
-
-{#              <div class="form-group">#}
-{#                <label for="m_cname ">xxxxx</label>#}
-{#                <div class="col-sm-6 add_select_cname">#}
-{#                <select class="selectpicker show-tick" data-actions-box="true" data-size="15" id="testxxx" multiple>#}
-{#                <select class="selectpicker" data-live-search="true" data-actions-box="true" id="testxxx" title="---请选择---">#}
-{#                <select class="selectpicker" multiple data-actions-box="true" title="---请选择---" id="testxxx">#}
-{#                    <option value="请选择">请选择1</option>#}
-{#                    <option value="请选择">请选择2</option>#}
-{#                    <option value="请选择">请选择3</option>#}
-{#                    <option value="请选择">请选择4</option>#}
-{#                    <option value="请选择">请选择5</option>#}
-{#                </select>#}
-{##}
-{#                 </div>#}
-{#            </div>#}
 
         </form>
 
@@ -523,13 +505,12 @@
         $('#btn_add').click(function(){
             $('#addModal').modal();
 
-
             let aInput = document.getElementById("add_sn");
             {#console.log(aInput)#}
             aInput.onchange = function(){
                 let data = $('#add_sn').val()
-				console.log("change");
-                console.log(data)
+				{#console.log("change");#}
+                {#console.log(data)#}
                 $('#add_type').val(data)
 
 			$.ajax({
@@ -555,10 +536,10 @@
             let add_sn = $('#add_sn').val()
             let remarks = $('#add_remarks').val()
             let asset_code = $('#add_asset_code').val()
-            let current_user = $('#add_current_user').val()
+            {#let current_user = $('#add_current_user').val()#}
             let dateTime = $('#dateTime').val()
             let nonetime = $('#requisition_time').val()
-            let dateTime1 = $('#dateTime1').val()
+            {#let dateTime1 = $('#dateTime1').val()#}
 
 
             $.ajax({
@@ -566,8 +547,10 @@
                 type: "POST",
                 dataType: "json",
                 {#data: {pro_name:name,type:type,add_sn:add_sn,remarks:remarks,asset_code:asset_code,current_user:current_user#}
-                data: {pro_name:name,type:type,num:num,add_sn:add_sn,remarks:remarks,asset_code:asset_code,current_user:current_user
-                    ,dateTime:dateTime,notime:nonetime,requisition_time:dateTime1},
+                {#data: {pro_name:name,type:type,num:num,add_sn:add_sn,remarks:remarks,asset_code:asset_code,current_user:current_user#}
+                {#    ,dateTime:dateTime,notime:nonetime,requisition_time:dateTime1},#}
+                data: {pro_name:name,type:type,num:num,add_sn:add_sn,remarks:remarks,asset_code:asset_code
+                    ,dateTime:dateTime,notime:nonetime},
                 success: function (result) {
                     if(result !== 0){
                         alert('添加成功!');
@@ -585,12 +568,19 @@
             $('#addModal').modal('hide')
             })
             {#清空form模态框#}
-            $('.modal-body').find('form').trigger('reset');
+            $('.modal-body').eq(0).find('form').trigger('reset');
         });
 
 
         {# 分发按钮 #}
-        $('#distribute').click(function() {
+        {#$('#distribute').click(function() {#}
+        $('#distribute').unbind('click').bind('click',function (){
+            $("#typeselect").empty();
+            $("#codeselect").empty();
+            $("#choice_user option:first").prop("selected", 'selected');
+            $("#selectele option:first").prop("selected", 'selected');
+            $('#selectele').selectpicker('refresh');
+            $('#choice_user').selectpicker('refresh');
             $('#ffModal').modal();
 
             $('#selectele').change(function () {
@@ -603,7 +593,6 @@
                           'selectinfo': select
                     },
                       success: function (data) {
-                          {#console.log(data)#}
                           let content='';
                           $.each(data, function(i, item){
                         // 调用接口后返回list数据[u'account_role', u'account_user'],循环遍历该list拼接选项的内容
@@ -664,22 +653,27 @@
                         window.location.reload()
                         }
                       },
-
                 });
                 $('#ffModal').modal('hide')
                 {#window.location.reload()#}
             })
+            {#$('.modal-body').find('form').trigger('reset');#}
 
         })
 
-
         {# 回收按钮 #}
         $('#recovery').click(function() {
+        {#$('#recovery').unbind('click').bind('click',function (){#}
+            $('#recover_user').val("");
+            $("#recover_assets").empty();
+            $('#recover_user').selectpicker('refresh');
+            $('#recover_assets').selectpicker('refresh');
+
             $('#hsModal').modal();
 
-            $('#recover_user').change(function () {
+            $('#recover_user').unbind('click').bind('change',function (){
+            {#$('#recover_user').change(function () {#}
                 let select = $("#recover_user option:selected").text()
-                $("#recover_assets").empty();
                 $.ajax({
                       url: '{% url "myproperty:selectrecover" %}',
                       type: 'GET',
@@ -688,6 +682,7 @@
                           'select_user': select
                     },
                     success: function (datas) {
+                        $("#recover_assets").empty();
                         for(let i = 0; i < datas.length; i++) {
                             $("#recover_assets").append("<option value='"+i+"'>"+datas[i]+"</option>");
                         }
@@ -721,7 +716,6 @@
                     });
                     $('#hsModal').modal('hide')
                 })
-
         })
 
 

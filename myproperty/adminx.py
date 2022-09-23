@@ -3,6 +3,8 @@ import xadmin
 from myproperty.models import Info
 from import_export import resources
 from collections import OrderedDict
+from guardian.admin import GuardedModelAdminMixin
+from guardian.shortcuts import get_objects_for_user, assign_perm
 
 
 class MyCourseResource(resources.ModelResource):
