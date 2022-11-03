@@ -1,6 +1,6 @@
 import xadmin
 
-from myproperty.models import Info
+from myproperty.models import Info, Grant
 from import_export import resources
 from collections import OrderedDict
 from guardian.admin import GuardedModelAdminMixin
@@ -20,11 +20,14 @@ class InfoAdmin(object):
     ordering = ['id']
 
 
-# class GrantAdmin(object):
-#     list_display = ['device', 'specification', 'user_name', 'info_code', 'alters_date']
-#     search_fields = ['device', 'user_name', 'alters_date']
-#     list_filter = ['device', 'user_name', 'alters_date']
+class GrantAdmin(object):
+    list_display = ['device', 'specification', 'user_name', 'info_code', 'alters_date']
+    search_fields = ['device', 'user_name', 'alters_date']
+    list_filter = ['device', 'user_name', 'alters_date']
+
+    class Meta:
+        model = Grant
 
 
 xadmin.site.register(Info, InfoAdmin)
-# xadmin.site.register(Grant, GrantAdmin)
+xadmin.site.register(Grant, GrantAdmin)

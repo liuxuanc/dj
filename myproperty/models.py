@@ -22,7 +22,7 @@ class Info(models.Model):
     return_date = models.DateTimeField(blank=True, null=True, verbose_name='归还日期', default=None)
     remarks = models.TextField(verbose_name='备注', null=True, default=None)
     sn = models.CharField(max_length=32, verbose_name='sn号', null=True)
-    parameter = models.TextField(verbose_name='具体参数', null=True)
+    #parameter = models.TextField(verbose_name='具体参数', null=True)
     # alter_time = models.DateTimeField(verbose_name='修改日期', default=timezone.now, null=True)
 
     class Meta:

@@ -19,6 +19,7 @@ from django.urls import reverse
 from django.contrib.auth.decorators import login_required, permission_required
 from .forms import RegisterForm
 from django.contrib.auth.models import Group, User
+from django.db.models import Q
 # Create your views here.
 
 
@@ -106,9 +107,12 @@ def infodata(request):
 @permission_required('myproperty.view_info', raise_exception=True)
 def management(request):
     lists = []
-    no_used = Info.objects.filter(current_user='').distinct()
+    no_used = Info.objects.filter(Q(current_user='') | Q(current_user__isnull=True)).distinct()
+    # no_used = Info.objects.filter(current_user__isnull=True).distinct()
+    # print(no_used)
     for i in no_used.values('pro_name'):
         lists.append(i.get('pro_name'))
+    # print(lists)
     user_list = ['刘轩', '胡少桂', '蒋叶飞', '蒋晶欣', '张林', '王鑫']
     # task = Info.objects.filter(current_user='刘轩')
     return render(request, 'management.html', locals())
@@ -284,7 +288,8 @@ def addinfo(request):
 def selectinfo(request):
     type_list = []
     data = request.GET['selectinfo']
-    objs = Info.objects.filter(current_user='').filter(pro_name=data)
+    objs = Info.objects.filter(Q(current_user='') | Q(current_user__isnull=True)).filter(pro_name=data)
+    # print(objs)
     for obj in objs:
         type_list.append(obj.type)
     # print(type_list)
@@ -294,7 +299,9 @@ def selectinfo(request):
 
 def selectsn(request):
     data = request.GET['selectinfo']
-    objs = Info.objects.filter(current_user='').filter(type=data)
+    # print(data)
+    objs = Info.objects.filter(Q(current_user='') | Q(current_user__isnull=True)).filter(type=data)
+    # print(objs)
     code_list = []
     for obj in objs:
         code_list.append(obj.asset_code)
@@ -420,15 +427,15 @@ def calendar(request):
         num.append(len(i))
 
     qy = int(c[0]) % 3
-    if qy == 0:
+    if qy == 1:
         user_list = ['胡少桂', '蒋晶欣', '刘轩']
         color = ['#378006', '#4169E1', '#F4A460']
-    elif qy == 1:
-        user_list = ['蒋晶欣', '刘轩', '胡少桂']
-        color = ['#4169E1', '#F4A460', '#378006']
-    else:
+    elif qy == 0:
         user_list = ['刘轩', '胡少桂', '蒋晶欣']
         color = ['#F4A460', '#378006', '#4169E1']
+    else:
+        user_list = ['蒋晶欣', '刘轩', '胡少桂']
+        color = ['#4169E1', '#F4A460', '#378006']
     x = 0
     for i in range(len(num)):
         if len(num) > len(user_list):
