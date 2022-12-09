@@ -11,6 +11,7 @@
     <script src="{% static 'AdminLTE-master/plugins/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
     <link href="https://cdn.bootcdn.net/ajax/libs/bootstrap-select/1.14.0-beta2/css/bootstrap-select.min.css" rel="stylesheet">
     <script src="https://cdn.bootcdn.net/ajax/libs/bootstrap-select/1.14.0-beta2/js/bootstrap-select.min.js"></script>
+{#    <script src="{% static 'js/bootstrap-select.js' %}"></script>#}
     <script src="https://cdn.bootcdn.net/ajax/libs/bootstrap-select/1.14.0-beta2/js/i18n/defaults-zh_CN.min.js"></script>
 
     <link rel="stylesheet" href="{% static 'css/bootstrap-table_1.19.1.css' %}">
@@ -67,48 +68,77 @@
                     id="scrap">报废</button>
         </div>
         {% endif %}
+
+        <div class="btn-sm">
+            <button class="btn btn-w-m btn-info glyphicon glyphicon-plus" data-toggle="modal"
+                    data-keyboard="true" data-backdrop="false"
+                    id="tbprint">打印</button>
+        </div>
+
+
+
     </div>
 
     <div class="panel-group" id="accordion">
         <div class="panel panel-success">
-{#            <div class="panel-heading">#}
-{#                <h4 class="panel-title">#}
-{#                    <a data-toggle="collapse" data-parent="#accordion"#}
-{#                       href="#collapseThree">#}
-{#                        查询#}
-{#                    </a>#}
-{#                </h4>#}
-{#            </div>#}
+            <div class="panel-heading">
+                <h4 class="panel-title" style="font-size: smaller">
+                    <a data-toggle="collapse" data-parent="#accordion"
+                       href="#collapseThree">
+                        过滤
+                    </a>
+                </h4>
+            </div>
             <div id="collapseThree" class="panel-collapse collapse">
                 <div class="panel-body">
-                     <label for="">姓名:</label>
-                        <input type="text" id="search_name">
+{#                    <label for="">资产类型:</label>#}
+{#                    <label for="search_name"></label><input type="text" id="search_name">#}
+                    <div class="form-inline">
+                        <label for=""  style="font-size: smaller">资产类型:</label>
+                        <div class="col-sm-2 search-group">
+{#                            <select class="selectpicker form-control" multiple data-actions-box="true" title="---请选择---" id="recover_assets">#}
+                            <select class="selectpicker show-tick form-control" data-live-search="true" data-size='7' title="---请选择---" id="search_pro_name">
+                                <option value=''></option>
+                                {% for proper in proper_name %}
+                                 <option value={{ proper }}>{{ proper }}</option>
+                                {% endfor %}
+                             </select>
+                         </div>
 
-                        <label for="">资产码:</label>
-                        <input type="text" id="search_code">
+{#                        <label for="">闲置资产:</label>#}
+{#                        <label for="search_code"></label><input type="text" id="search_code">#}
+                     </div>
 
-                        <label for="">日期:</label>
-                        <wui-date
-                            format="yyyy-mm-dd hh:mm:ss"
-                            placeholder="请选择开始日期"
-                            id="date3"
-                            btns="{'ok':'确定','now':'此刻'}"
-                            ng-model="date4"
-                            class="dateinfo"
-                            >
-                        </wui-date>
 
-                        <wui-date
-                                format="yyyy-mm-dd hh:mm:ss"
-                                placeholder="请选择结束日期"
-                                id="date3"
-                                btns="{'ok':'确定','now':'此刻'}"
-                                ng-model="date2"
-                                >
-                        </wui-date>
+{#                <form role="form">#}
+
+
+
+
+
+
+{#                        <label for="">日期:</label>#}
+{#                        <wui-date#}
+{#                            format="yyyy-mm-dd hh:mm:ss"#}
+{#                            placeholder="请选择开始日期"#}
+{#                            id="date3"#}
+{#                            btns="{'ok':'确定','now':'此刻'}"#}
+{#                            ng-model="date4"#}
+{#                            class="dateinfo"#}
+{#                            >#}
+{#                        </wui-date>#}
+
+{#                        <wui-date#}
+{#                                format="yyyy-mm-dd hh:mm:ss"#}
+{#                                placeholder="请选择结束日期"#}
+{#                                id="date3"#}
+{#                                btns="{'ok':'确定','now':'此刻'}"#}
+{#                                ng-model="date2"#}
+{#                                >#}
+{#                        </wui-date>#}
                 </div>
-                <button type="button" class="btn btn-success" id="search-button">查找</button>
-                <button type="button" class="btn btn-warning" id="search-clean">重置</button>
+{#                <button type="button" class="btn btn-success" id="search-button">查找</button>#}
+{#                <button type="button" class="btn btn-warning" id="search-clean">重置</button>#}
             </div>
         </div>
     </div>
@@ -133,9 +163,28 @@
           <form method="post" enctype="multipart/form-data">
             {% csrf_token %}
             <div class="form-group">
-                <label>资产名称
-                <input class="form-control" id="add_pro_name" placeholder="必填项"></label>
+{#                <label>资产名称#}
+{#                <input class="form-control" id="add_pro_name" placeholder="必填项"></label>#}
+                <label for="m_cname">资产名称</label>
+                <div class="input-group">
+                    <div class="col-sm-5 add_select_cname">
+                    <select class="selectpicker show-tick form-control" data-live-search="true" data-size='7' title="---请选择---" id="add_pro_name">
+                        {% for proper in proper_name %}
+                         <option value={{ proper }}>{{ proper }}</option>
+                        {% endfor %}
+{#                        <option value="other">其他</option>#}
+                        <option value="other">other</option>
+                     </select>
+                     </div>
+
+                    <div class="col-sm-7 add_select_cname">
+                        <label>
+                            <input style="width:50% " class="form-control fade" placeholder="请输入" id='del_fade' name='fd_val' type="text" />
+                        </label>
+                    </div>
+                </div>
             </div>
+
 
             <div class="form-group">
                 <label>S/N
@@ -158,7 +207,7 @@
             </div>
 
             <div class="form-group">
-                <label>规格型号
+                <label>资产型号
                 <input class="form-control" id="add_type"></label>
             </div>
 
@@ -222,7 +271,7 @@
             </div>
 
             <div class="form-group">
-                <label for="m_cname ">规格型号</label>
+                <label for="m_cname ">资产型号</label>
                 <div class="col-sm-6 add_select_cname">
 {#                <select class="selectpicker show-tick form-control" id="typeselect">#}
                 <select class="form-control" id="typeselect" required="required">
@@ -328,13 +377,13 @@
                 <input class="form-control" id="pro_name"></label>
             </div>
             <div class="form-group">
-                <label>规格型号
+                <label>资产型号
                 <input class="form-control" id="type"></label>
             </div>
-            <div class="form-group">
-                <label>数量
-                <input class="form-control" id="num"></label>
-            </div>
+{#            <div class="form-group">#}
+{#                <label>数量#}
+{#                <input class="form-control" id="num"></label>#}
+{#            </div>#}
             <div class="form-group">
                 <label>使用者
                 <input class="form-control" id="current_user"></label>
@@ -368,7 +417,6 @@
 
 
 
-
 {% endblock %}
 
 
@@ -389,17 +437,28 @@
             pagination: true, //在表格底部显示分页工具栏
             pageSize: 10,
             pageNumber: 1,
-            pageList: [10, 20, 50, 100, 200, 'ALL'],
+            pageList: [10, 20, 50, 100, 200],
             idField: "ProductId", //标识哪个字段为id主键
             showToggle: false, //名片格式
             cardView: false,//设置为True时显示名片（card）布局
             showColumns: true, //显示隐藏列
             showRefresh: true, //显示刷新按钮
             singleSelect: true,//复选框只能选择一条记录
-            search: true,//是否显示右上角的搜索框
+            search: false,//是否显示右上角的搜索框
             clickToSelect: true,//点击行即可选中单选/复选框
-            sidePagination: "client",//表格分页的位置
-            {#queryParams: queryParams, //参数#}
+            sidePagination: "server",//表格分页的位置
+            queryParams: function(params){
+                var temp = {
+                    rows: params.limit,
+{#                    page: (params.offset / params.limit) + 1,#}
+                    offset: params.offset,
+                    limit: params.limit,
+                    search_name: $('#search_pro_name').val()
+
+                };
+                return temp;
+            },
+
             queryParamsType: "limit", //参数格式,发送标准的RESTFul类型的参数请求
             silent: true, //刷新事件必须设置
             showExport: true,
@@ -411,7 +470,7 @@
                 {checkbox: true},
                 {field: 'id', title: 'ID',visible: false},//默认隐藏ID这一列
                 {field: 'pro_name', title: '资产名称'},
-                {field: 'type', title: '规格型号'},
+                {field: 'type', title: '资产型号'},
                 {#{field: 'parameter', title: '具体参数'},#}
                 {field: 'num', title: '数量',visible: false},
                 {field: 'add_time', title: '入库日期',visible: false},
@@ -476,7 +535,7 @@
         $('#save').unbind('click').bind('click',function (){
             let name = $('#pro_name').val()
             let type = $('#type').val()
-            let num = $('#num').val()
+{#            let num = $('#num').val()#}
             let remarks = $('#remarks').val()
             let asset_code = $('#asset_code').val()
             let current_user = $('#current_user').val()
@@ -487,7 +546,7 @@
                 url: '/saveinfo/',
                 type: "POST",
                 dataType: "json",
-                data: {userId:id,pro_name:name,type:type,num:num,remarks:remarks,asset_code:asset_code,current_user:current_user,requisition_time:requisition_time,user_one:user_one},
+                data: {userId:id,pro_name:name,type:type,remarks:remarks,asset_code:asset_code,current_user:current_user,requisition_time:requisition_time,user_one:user_one},
                 success: function () {
                     $('#save').unbind()
                     alert('修改成功!')
@@ -504,15 +563,37 @@
         {#点击新增按钮，填充数据到数据库#}
         $('#btn_add').click(function(){
             $('#addModal').modal();
+            $('#add_pro_name').val("");
+            $('#add_pro_name').selectpicker('refresh');
+
+
+            $('#add_pro_name').unbind('click').bind('change',function (){
+                let pro_name = $('#add_pro_name').val()
+                let obj = document.getElementById("del_fade");
+                if(pro_name == 'other'){
+                    obj.setAttribute('class','form-control')
+                    $('#add_asset_code').val("");
+                }
+                else {
+                    obj.setAttribute('class','form-control fade')
+
+                    $.ajax({
+                        url: '{% url "myproperty:add_asset_code" %}',
+                        type: "GET",
+                        dataType: "json",
+                        data: {pro_name:pro_name},
+                        success: function (result) {
+                                $('#add_asset_code').val(result)
+                            }
+                        })
+                    }
+                })
 
             let aInput = document.getElementById("add_sn");
-            {#console.log(aInput)#}
+
             aInput.onchange = function(){
                 let data = $('#add_sn').val()
-				{#console.log("change");#}
-                {#console.log(data)#}
                 $('#add_type').val(data)
-
 			$.ajax({
                 url: '{% url "myproperty:getlentype" %}',
                 type: "GET",
@@ -524,9 +605,6 @@
                 }
 			    })
             }
-
-            {#$('body').on('hidden.bs.modal', '.modal', function () {#}
-            {#  $(this).removeData('bs.modal');});#}
 
             $('#addsave').unbind('click').bind('click',function (){
             let name = $('#add_pro_name').val()
@@ -540,7 +618,7 @@
             let dateTime = $('#dateTime').val()
             let nonetime = $('#requisition_time').val()
             {#let dateTime1 = $('#dateTime1').val()#}
-
+            let fade_val = $('#del_fade').val()
 
             $.ajax({
                 url: '/addinfo/',
@@ -550,7 +628,7 @@
                 {#data: {pro_name:name,type:type,num:num,add_sn:add_sn,remarks:remarks,asset_code:asset_code,current_user:current_user#}
                 {#    ,dateTime:dateTime,notime:nonetime,requisition_time:dateTime1},#}
                 data: {pro_name:name,type:type,num:num,add_sn:add_sn,remarks:remarks,asset_code:asset_code
-                    ,dateTime:dateTime,notime:nonetime},
+                    ,dateTime:dateTime,notime:nonetime,fade_val:fade_val},
                 success: function (result) {
                     if(result !== 0){
                         alert('添加成功!');
@@ -612,12 +690,14 @@
 
 
             $('#typeselect').change(function () {
+                let select = $("#selectele option:selected").text()
                 let tyselect = $("#typeselect option:selected").text()
                 $.ajax({
                       url: '{% url "myproperty:selectsn" %}',
                       type: 'GET',
                       datatype: 'json',
                       data: {
+                          'select': select,
                           'selectinfo': tyselect
                     },
                       success: function (data) {
@@ -719,20 +799,54 @@
         })
 
 
+        {#打印#}
+        $('#tbprint').unbind('click').bind('click',function (){
+            let rows = $('#table').bootstrapTable('getSelections')
+            if(rows.length !== 0){
+               row = rows[0]
+               id = row.id
+{#               console.log(id)#}
+            $.ajax({
+                url: '{% url "myproperty:tb_print" %}',
+                type: 'get',
+                data: {userId:id},
+                dataType: 'json',
+                })
+            }
+        })
+
+
+        {#  自带search值   #}
+{#            $('#table').on('search.bs.table', function (e,text) {#}
+{#                    console.log(text);#}
+{#                $.ajax({#}
+{#                    url: '{% url "myproperty:infodata" %}',#}
+{#                    type: 'get',#}
+{#                    data: {text:text},#}
+{#                    dataType: 'json',#}
+{#                    })#}
+{#                });#}
+
+
         {# 搜索 #}
-        $('#search-button').click(function () {
-            let name = $('#search_name').val()
-            let code = $('#search_code').val()
+        $('#search_pro_name').unbind('click').bind('change',function (){
+            let search_pro_name = $('#search_pro_name').val()
+            console.log(search_pro_name)
             $.ajax({
                 url: '{% url "myproperty:infodata" %}',
                   type: 'GET',
                   datatype: 'json',
                   data: {
-                      'name': name,
-                      'code': code,
+                      'search_name': search_pro_name,
                   },
+                  success: function (dict_data) {
+                    console.log(dict_data)
+{#                    $('#table').bootstrapTable(('refresh'));#}
+                    $('#table').bootstrapTable("load", dict_data);
+
+                  }
             })
-            $('#table').bootstrapTable({% url "myproperty:infodata" %});
+{#            $('#table').bootstrapTable({% url "myproperty:infodata" %});#}
         })
 
 

@@ -20,6 +20,10 @@ from django.contrib.auth.decorators import login_required, permission_required
 from .forms import RegisterForm
 from django.contrib.auth.models import Group, User
 from django.db.models import Q
+from tabulate import tabulate
+import tempfile
+import win32api
+import win32print
 # Create your views here.
 
 
@@ -88,12 +92,32 @@ def navigation(request):
 
 def infodata(request):
     if request.method == "GET":
-        infos = Info.objects.all()
-        total = infos.count()
-        rows = list(infos.values())
-        if request.user.has_perm('myproperty.change_info'):
-            return JsonResponse({'total': total, 'rows': rows})
+        num = request.GET.get('rows')
+        offset = request.GET.get('offset')
+        limit = request.GET.get('limit')
 
+        if not all((num, offset, limit)):
+            num = Info.objects.all().count()
+            offset = 0
+            limit = 10
+        page = int(int(offset) / int(limit)) + 1
+        right_boundary = int(page) * int(num)
+        search_name = request.GET.get('search_name')
+        if search_name:
+            print(search_name)
+            obj_all = Info.objects.all()
+            obj_filter = obj_all.filter(pro_name=search_name).filter(Q(current_user='') | Q(current_user__isnull=True))
+            info_obj = obj_filter[int(num) * (int(page) - 1): right_boundary]
+            total = obj_filter.count()
+
+        else:
+            info_obj = Info.objects.all()[int(num) * (int(page) - 1): right_boundary]
+            total = Info.objects.all().count()
+
+        rows = list(info_obj.values())
+        dict_data = {'total': total, 'rows': rows}
+        if request.user.has_perm('property.change_info'):
+            return JsonResponse(dict_data)
         obj = Info.objects.filter(current_user=request.user)
         total_task = obj.count()
         row = list(obj.values())
@@ -103,9 +127,47 @@ def infodata(request):
         return render(request, 'index.html')
 
 
+def tb_print(request):
+    userid = request.GET['userId']
+    user_obj = Info.objects.get(id=userid)
+    table = [
+             ['资产名称', ],
+             ['品牌型号', ],
+             ['S/N', ],
+             ['资产编码', ],
+             ['使用人', ],
+             ]
+    table[0].append(user_obj.pro_name)
+    table[1].append(user_obj.type)
+    table[2].append(user_obj.sn)
+    table[3].append(user_obj.asset_code)
+    table[4].append(user_obj.current_user)
+    table_print = tabulate(table, tablefmt='grid')
+    print(table_print)
+    filename = tempfile.mktemp(".txt")
+    open(filename, "w").write(table_print)
+    win32api.ShellExecute(
+        0,
+        "open",  # 这个参数为open可以调用默认程序打开指定文件，为
+        filename,
+        #
+        # If this is None, the default printer will
+        # be used anyway.
+        #
+        '/d:"%s"' % win32print.GetDefaultPrinter(),
+        ".",
+        0
+    )
+    return render(request, 'management.html')
+
+
 @login_required(login_url='myproperty:login')
 @permission_required('myproperty.view_info', raise_exception=True)
 def management(request):
+    proper_name = []
+    all_proper_name = Info.objects.values('pro_name').distinct()
+    for i in all_proper_name:
+        proper_name.append(i.get('pro_name'))
     lists = []
     no_used = Info.objects.filter(Q(current_user='') | Q(current_user__isnull=True)).distinct()
     # no_used = Info.objects.filter(current_user__isnull=True).distinct()
@@ -121,7 +183,8 @@ def management(request):
 def showdata(request):
     # # global startdate, endtdate, model1, model2
     i_d = request.GET['userId']
-    pro_name = Info.objects.get(id=i_d).pro_name
+    info_obj = Info.objects.get(id=i_d)
+    pro_name = info_obj.pro_name
     typed = Info.objects.get(id=i_d).type
     sn = Info.objects.get(id=i_d).sn
     num = Info.objects.get(id=i_d).num
@@ -135,7 +198,7 @@ def showdata(request):
     dic = {'pro_name': pro_name, 'type': typed, 'num': num, 'add_time': add_time, 'asset_code': asset_code,
            'current_user': current_user, 'requisition_time': requisition_time, 'user_one': user_one, 'sn': sn,
            'remarks': remarks}
-    # print(dic)
+    print(dic)
 
     return HttpResponse(json.dumps(dic, cls=DateEncoder), content_type='application/json')
 
@@ -196,7 +259,7 @@ def saveinfo(request):
     # print(sn)
     pro_name = request.POST.get('pro_name')
     typed = request.POST.get('type')
-    num = request.POST.get('num')
+    # num = request.POST.get('num')
     asset_code = request.POST.get('asset_code')
     new_current_user = request.POST.get('current_user')
     # print(new_current_user)
@@ -210,13 +273,15 @@ def saveinfo(request):
     # notime = time.strftime('1999-12-31 01:02:03', time.localtime(time.time()))
 
     if not current_user:
-        Info.objects.filter(id=i_d).update(pro_name=pro_name, type=typed, num=num, asset_code=asset_code,
+        # num = num,
+        Info.objects.filter(id=i_d).update(pro_name=pro_name, type=typed, asset_code=asset_code,
                                            current_user=new_current_user, remarks=remarks, requisition_time=None)
         if new_current_user:
             Info.objects.filter(id=i_d).update(requisition_time=now)
 
     else:
-        Info.objects.filter(id=i_d).update(pro_name=pro_name, type=typed, num=num, asset_code=asset_code,
+        # num = num,
+        Info.objects.filter(id=i_d).update(pro_name=pro_name, type=typed, asset_code=asset_code,
                                            current_user=new_current_user, remarks=remarks)
         if new_current_user != current_user:
             Info.objects.filter(id=i_d).update(current_user=new_current_user, requisition_time=now,
@@ -240,6 +305,26 @@ def getlentype(request):
         return HttpResponse(json.dumps(typed), content_type='application/json')
 
 
+def add_asset_code(request):
+    pro_name = request.GET['pro_name']
+    pro_name_obj = Info.objects.filter(pro_name=pro_name)
+    suffix = [i.asset_code for i in pro_name_obj]
+    new_crazy = filter(str.isalpha, suffix[0])
+    prefix = (''.join(list(new_crazy)))
+    num_list = []
+    for obj in pro_name_obj:
+        new_asset_code = filter(str.isdigit, obj.asset_code)
+        num_list.append(''.join(list(new_asset_code)))
+
+    max_num = max([int(i) for i in num_list])
+    asset_code = str(prefix) + str(max_num + 1).zfill(4)
+    while Info.objects.filter(asset_code=asset_code).exists() == True:
+        print('xxx')
+        max_num += 1
+        asset_code = str(prefix) + str(max_num + 1).zfill(4)
+    return HttpResponse(json.dumps(asset_code), content_type='application/json')
+
+
 @csrf_exempt
 def addinfo(request):
     # sn = request.POST['add_sn']
@@ -254,6 +339,7 @@ def addinfo(request):
     #     typed = data['data'][0]['codeName']
 
     typed = request.POST['type']
+    fade_val = request.POST['fade_val']
     pro_name = request.POST.get('pro_name')
     sn = request.POST.get('add_sn')
     # num = request.POST.get('num')
@@ -267,19 +353,26 @@ def addinfo(request):
     time1 = request.POST.get('dateTime')
     nonetime = request.POST.get('notime')
     requisition_time = request.POST.get('requisition_time')
-    print(time1)
-
-    if not (pro_name and asset_code and time1):
-        result = 0
-        return HttpResponse(json.dumps(result), content_type='application/json')
-
+    # print(time1)
     if not requisition_time:
         requisition_time = nonetime
-    # Info.objects.create(pro_name='1112', type='1564', asset_code='D00921', add_time='2022-03-30 17:05:56',
-    #                     user_one_requisition_time=nonetime, return_date=nonetime)
-    Info.objects.create(pro_name=pro_name, type=typed, add_time=time1, asset_code=asset_code,
-                        current_user=current_user, remarks=remarks, user_one_requisition_time=nonetime,
-                        return_date=nonetime, requisition_time=requisition_time, sn=sn)
+    if pro_name == 'other':
+        if not (fade_val and asset_code and time1):
+            result = 0
+            return HttpResponse(json.dumps(result), content_type='application/json')
+
+        Info.objects.create(pro_name=fade_val, type=typed, add_time=time1, asset_code=asset_code,
+                            current_user=current_user, remarks=remarks, user_one_requisition_time=nonetime,
+                            return_date=nonetime, requisition_time=requisition_time, sn=sn)
+
+    else:
+        if not (pro_name and asset_code and time1):
+            result = 0
+            return HttpResponse(json.dumps(result), content_type='application/json')
+
+        Info.objects.create(pro_name=pro_name, type=typed, add_time=time1, asset_code=asset_code,
+                            current_user=current_user, remarks=remarks, user_one_requisition_time=nonetime,
+                            return_date=nonetime, requisition_time=requisition_time, sn=sn)
     result = 1
     return HttpResponse(json.dumps(result), content_type='application/json')
 
@@ -299,9 +392,11 @@ def selectinfo(request):
 
 def selectsn(request):
     data = request.GET['selectinfo']
+    select = request.GET['select']
     # print(data)
-    objs = Info.objects.filter(Q(current_user='') | Q(current_user__isnull=True)).filter(type=data)
-    # print(objs)
+    # print(select)
+    objs = Info.objects.filter(pro_name=select).filter(Q(current_user='')
+                                                       | Q(current_user__isnull=True)).filter(type=data)
     code_list = []
     for obj in objs:
         code_list.append(obj.asset_code)
@@ -362,8 +457,7 @@ def savehsbtn(request):
     now = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
     result = request.POST['select']
     user = request.POST['user']
-    code = re.findall(r"D\d+", result)
-    # print(code)
+    code = re.findall(r"(?<=-----)[A-Z]+\d+", result)
     for i in code:
         req_time = Info.objects.get(asset_code=i).requisition_time
         Info.objects.filter(asset_code=i).update(current_user='', user_one_requisition_time=req_time,
@@ -403,7 +497,8 @@ def showsign(request):
 
 def calendar(request):
     today = date.today()
-    twentydays_later = (today + datetime.timedelta(days=+24)).strftime("%Y-%m-%d")
+    twentydays_later = (today + datetime.timedelta(days=+26)).strftime("%Y-%m-%d")
+    print(twentydays_later)
     end_time = dt.strptime(str(twentydays_later), '%Y-%m-%d')
     workdays = chinese_calendar.get_workdays(today, end_time)
     c = []

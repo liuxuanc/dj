@@ -106,10 +106,10 @@ def getredis(task_id, user, code):
                                 return "access db is fail!"
                             else:
                                 return conn
-
                         res = requests.get(value)
                         img = res.content
                         base64_date = base64.b64encode(img)
+                        # print(base64_date)
                         try:
                             conn = dbinfo()
                             conncur = conn.cursor()

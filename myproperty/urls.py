@@ -18,6 +18,7 @@ urlpatterns = [
     path('register/', views.register, name='register'),
 
     path('infodata/', views.infodata, name='infodata'),
+    path('tb_print/', views.tb_print, name='tb_print'),
     path('navigation/', views.navigation, name='navigation'),
     path('management/', views.management, name='management'),
     path('workflow/', views.workflow, name='workflow'),
@@ -27,6 +28,7 @@ urlpatterns = [
     path('saveinfo/', views.saveinfo, name='saveinfo'),
     path('addinfo/', views.addinfo, name='addinfo'),
     path('getlentype/', views.getlentype, name='getlentype'),
+    path('add_asset_code/', views.add_asset_code, name='add_asset_code'),
     path('selectinfo/', views.selectinfo, name='selectinfo'),
     path('selectsn/', views.selectsn, name='selectsn'),
     path('saveffbtn/', views.saveffbtn, name='saveffbtn'),

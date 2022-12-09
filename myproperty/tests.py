@@ -499,8 +499,110 @@ end_time = dt.strptime(str(twentydays_later), '%Y-%m-%d')
 #     calendar_list.append(dict1)
 # print(calendar_list)
 
+import tempfile
+import win32api
+import win32print
+# from tabulate import tabulate
+import wcwidth
 
 
+# table = [['资产名称', '笔记本'],
+# ['品牌型号', '联想V480 8G 512G'],
+# ['S/N', 'fasld3142'],
+# ['资产编码', 'Dhasf1231'],
+# ['使用人', '蒋叶飞'],
+# ]
+#
+#
+# table = [['name', '笔记本'],
+# ['tyoe', '联想V480 8G 512G测试测试tes'],
+# ['S/N', 'fasld3142'],
+# ['asset', 'Dhasf1231'],
+# ['pepole', '蒋叶飞'],
+# ]
+
+
+
+# test = ['资产名称', '计算机']
+# print(test[0], test[1])
+
+# print('资产名称', '计算机')
+# print('品牌型号', 'Smith')
+# print('S/N', 'sfjasdl234')
+
+# table = [['First Name', 'Last Name', 'Age'],
+# ['John', 'Smith', 39],
+# ['Mary', 'Jane', 25],
+# ['Jennifer', 'Doe', 28]]
+# tableprint = tabulate(table)
+# tableprint = tabulate(table, tablefmt='grid')
+# print(tableprint)
+# print(tableprint, tablefmt='pipe')
+
+import sys
+# from prettytable import PrettyTable
+#
+#
+# table = PrettyTable(['编号', '云编号', '名称', 'IP地址'])
+# table.add_row(['1', 'server01', '服务器01', '172.16.0.1'])
+# table.add_row(['2', 'server02', '服务器02', '172.16.0.2'])
+# table.add_row(['3', 'server03', '服务器03', '172.16.0.3'])
+# table.add_row(['4', 'server04', '服务器04', '172.16.0.4'])
+# table.add_row(['5', 'server05', '服务器05', '172.16.0.5'])
+# table.add_row(['6', 'server06', '服务器06', '172.16.0.6'])
+# table.add_row(['7', 'server07', '服务器07', '172.16.0.7'])
+# table.add_row(['8', 'server08', '服务器08', '172.16.0.8'])
+# table.add_row(['9', 'server09', '服务器09', '172.16.0.9'])
+# print(table)
+#
+# filename = tempfile.mktemp (".txt")
+# open (filename, "w").write (tableprint)
+# # open (filename, "w").write (tabulate(table, tablefmt="grid"))
+# win32api.ShellExecute (
+#  0,
+#  "open",#这个参数为open可以调用默认程序打开指定文件，为
+#  filename,
+#  #
+#  # If this is None, the default printer will
+#  # be used anyway.
+#  #
+#  '/d:"%s"' % win32print.GetDefaultPrinter(),
+#  ".",
+#  0
+# )
+
+
+# $('#table').selectpicker('refresh');
+# $('#table').bootstrapTable('refreshOptions', {data: dict_data});
+# $("#table").bootstrapTable('destroy');
+# $('#table').bootstrapTable('refreshOptions', dict_data);
+# $('#table').bootstrapTable('refreshOptions', { % url
+# "myproperty:infodata" %});
+#
+#
+# $('#table').selectpicker('refresh');
+#
+#
+# $("#table").bootstrapTable('refresh')
+
+
+# print(tabulate(table))
+
+
+
+a = 0
+b = 10
+
+print(int(a/b) + 1)
+
+import re
+
+result = '戴尔(显示器)-----SDKW009电视机(海信)-----D006笔记本(ThinkBook 14p G2 ACH)-----D026笔记本(ThinkBook 14p G2 ACH)-----OW029'
+
+code = re.findall(r"(?<=-----)[A-Z]+\d+", result)
+# print(re.findall(r"D\d+", 'D002'))
+
+print(code)
 
 
 
